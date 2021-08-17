@@ -1,19 +1,20 @@
 package audio
 
-type Playback struct {
-	song    *Song
-	current int
+import (
+	"github.com/faiface/beep"
+)
+
+type SongStreamer struct {
+	streamer beep.Streamer
+	current  int
 }
 
-func (p Playback) Stream(samples [][2]float64) (n int, ok bool) {
-	for i := range samples {
-		samples[i][0] = float64(p.song.audio[2*p.current])
-		samples[i][1] = float64(p.song.audio[2*p.current+1])
-		p.current += 1
-	}
-	return len(samples), true
+func (p SongStreamer) Stream(samples [][2]float64) (n int, ok bool) {
+	n, ok = p.streamer.Stream(samples)
+	//fmt.Println(n)
+	return n, ok
 }
 
-func (n Playback) Err() error {
+func (n SongStreamer) Err() error {
 	return nil
 }

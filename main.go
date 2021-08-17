@@ -19,8 +19,10 @@ func play(c *gin.Context) {
 }
 
 func main() {
-	router := gin.Default()
-	router.GET("/play/:name", play)
+	//router := gin.Default()
+	//router.GET("/play/:name", play)
 
-	router.Run("localhost:8080")
+	//router.Run("localhost:1337")
+
+	audioPlayer.Play("good.mp3")
 }

@@ -2,12 +2,12 @@ package audio
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/faiface/beep"
-	"github.com/faiface/beep/speaker"
+	"github.com/faiface/beep/mp3"
 )
 
 type AudioPlayer struct {
@@ -16,8 +16,8 @@ type AudioPlayer struct {
 	buffersize  int
 	effectqueue chan float32
 	audioqueue  chan float32
-	queue       chan Song
 	volume      float32
+	queue       Queue
 }
 
 func CreateAudioPlayer() *AudioPlayer {
@@ -27,32 +27,38 @@ func CreateAudioPlayer() *AudioPlayer {
 	p.effectqueue = make(chan float32, p.buffersize)
 	p.audioqueue = make(chan float32, p.buffersize)
 	p.volume = 1
+	p.queue = Queue{}
 	return p
 }
 
 func (audioPlayer *AudioPlayer) Play(file string) {
 
-	song := Load(file, audioPlayer.blocksize)
+	f, err := os.Open(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	streamer, format, _ := mp3.Decode(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer streamer.Close()
+
+	song := SongStreamer{
+		streamer: streamer,
+		current:  0,
+	}
+
+	audioPlayer.queue.Add(song)
 
 	fmt.Println("Playing.  Press Ctrl-C to stop.")
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
 
-	format := beep.Format{
-		SampleRate:  14400,
-		NumChannels: 2,
-		Precision:   2,
-	}
-
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	playback := Playback{
-		song:    song,
-		current: 0,
-	}
-	for i := 0; i < len(song.audio)/audioPlayer.blocksize; i++ {
-		speaker.Play(playback)
-	}
+	Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	Play(&audioPlayer.queue)
+	select {}
 }
 
 func chk(err error) {

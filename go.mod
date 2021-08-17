@@ -16,7 +16,7 @@ require (
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/rpi-ws281x/rpi-ws281x-go v1.0.8
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
@@ -34,8 +34,8 @@ require (
 )
 
 require (
-	github.com/faiface/beep v1.0.2 // indirect
-	github.com/hajimehoshi/oto v0.6.1 // indirect
+	github.com/faiface/beep v1.0.2
+	github.com/hajimehoshi/oto v0.6.1
 	golang.org/x/image v0.0.0-20210216034530-4410531fe030 // indirect
 	golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028 // indirect
 )

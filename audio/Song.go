@@ -2,6 +2,7 @@ package audio
 
 import (
 	"encoding/binary"
+	"io/ioutil"
 	"log"
 	"math"
 	"os"
@@ -12,18 +13,16 @@ import (
 const SIZEOF_INT16 = 2
 
 type Song struct {
-	audio       []float64
+	audio       []float32
 	rms_buffer  []float32
 	tone_buffer []float32
 }
 
-func readAll(d *mp3.Decoder) []float64 {
-	bytes := make([]byte, d.Length())
-	d.Read(bytes)
-	data := make([]float64, len(bytes)/SIZEOF_INT16)
+func readAll(d *mp3.Decoder) []float32 {
+	bytes, _ := ioutil.ReadAll(d)
+	data := make([]float32, len(bytes)/SIZEOF_INT16)
 	for i := range data {
-		// assuming little endian
-		data[i] = float64(int16(binary.LittleEndian.Uint16(bytes[i*SIZEOF_INT16:(i+1)*SIZEOF_INT16]))) / math.Pow(2., 32.)
+		data[i] = math.Float32frombits(uint32(binary.LittleEndian.Uint16(bytes[i*SIZEOF_INT16 : (i+1)*SIZEOF_INT16])))
 	}
 	return data
 }
