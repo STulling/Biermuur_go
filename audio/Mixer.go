@@ -26,7 +26,7 @@ func (m *Mixer) Clear() {
 // Stream streams all Streamers currently in the Mixer mixed together. This method always returns
 // len(samples), true. If there are no Streamers available, this methods streams silence.
 func (m *Mixer) Stream(samples [][2]float64) (n int, ok bool) {
-	var tmp [1024][2]float64
+	var tmp [blockSize][2]float64
 
 	for len(samples) > 0 {
 		toStream := len(tmp)

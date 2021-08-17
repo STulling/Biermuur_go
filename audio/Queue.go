@@ -1,13 +1,37 @@
 package audio
 
-import "github.com/faiface/beep"
+import (
+	"math/rand"
+
+	"github.com/STulling/Biermuur_go/io"
+	"github.com/faiface/beep"
+)
 
 type Queue struct {
 	streamers []beep.Streamer
+	Requested bool
+	PlayList  []string
+}
+
+func (q *Queue) AddSong(name string) {
+	streamer := io.Load(name)
+	q.Add(streamer)
+}
+
+func (q *Queue) addRandom() {
+	streamer := io.Load(q.PlayList[rand.Intn(len(q.PlayList))])
+	q.Add(streamer)
 }
 
 func (q *Queue) Add(streamers ...beep.Streamer) {
 	q.streamers = append(q.streamers, streamers...)
+	if q.Requested {
+		q.Requested = false
+	}
+}
+
+func (q *Queue) SetPlaylist(list []string) {
+	q.PlayList = list
 }
 
 func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
@@ -15,6 +39,11 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 	// successfully filled already. We loop until all samples are filled.
 	filled := 0
 	for filled < len(samples) {
+		// There is just one song in the queue so we request the next.
+		if len(q.streamers) == 1 && !q.Requested && len(q.PlayList) != 0 {
+			q.Requested = true
+			go q.addRandom()
+		}
 		// There are no streamers in the queue, so we stream silence.
 		if len(q.streamers) == 0 {
 			for i := range samples[filled:] {

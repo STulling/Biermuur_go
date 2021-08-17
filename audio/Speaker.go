@@ -1,4 +1,3 @@
-// Package speaker implements playback of beep.Streamer values through physical speakers.
 package audio
 
 import (
@@ -10,13 +9,14 @@ import (
 )
 
 var (
-	mu      sync.Mutex
-	mixer   Mixer
-	samples [][2]float64
-	buf     []byte
-	context *oto.Context
-	player  *oto.Player
-	done    chan struct{}
+	mu         sync.Mutex
+	mixer      Mixer
+	MusicQueue Queue
+	samples    [][2]float64
+	buf        []byte
+	context    *oto.Context
+	player     *oto.Player
+	done       chan struct{}
 )
 
 // Init initializes audio playback through speaker. Must be called before using this package.
@@ -89,9 +89,9 @@ func Unlock() {
 }
 
 // Play starts playing all provided Streamers through the speaker.
-func Play(s ...beep.Streamer) {
+func Play() {
 	mu.Lock()
-	mixer.Add(s...)
+	mixer.Add(&MusicQueue)
 	mu.Unlock()
 }
 

@@ -2,12 +2,8 @@ package audio
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"os/signal"
-	"time"
 
-	"github.com/faiface/beep/mp3"
+	"github.com/faiface/beep"
 )
 
 type AudioPlayer struct {
@@ -20,9 +16,12 @@ type AudioPlayer struct {
 	queue       Queue
 }
 
+const (
+	blockSize = 1024
+)
+
 func CreateAudioPlayer() *AudioPlayer {
 	p := new(AudioPlayer)
-	p.blocksize = 1024
 	p.buffersize = 1024
 	p.effectqueue = make(chan float32, p.buffersize)
 	p.audioqueue = make(chan float32, p.buffersize)
@@ -31,33 +30,14 @@ func CreateAudioPlayer() *AudioPlayer {
 	return p
 }
 
-func (audioPlayer *AudioPlayer) Play(file string) {
+func (audioPlayer *AudioPlayer) Start() {
 
-	f, err := os.Open(file)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("Playing.")
 
-	streamer, format, _ := mp3.Decode(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer streamer.Close()
+	sr := beep.SampleRate(44100)
 
-	song := SongStreamer{
-		streamer: streamer,
-		current:  0,
-	}
-
-	audioPlayer.queue.Add(song)
-
-	fmt.Println("Playing.  Press Ctrl-C to stop.")
-
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt, os.Kill)
-
-	Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	Play(&audioPlayer.queue)
+	Init(sr, 10*blockSize)
+	Play()
 	select {}
 }
 

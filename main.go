@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/STulling/Biermuur_go/audio"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,15 +13,14 @@ var (
 
 func play(c *gin.Context) {
 	name := c.Param("name")
-	audioPlayer.Play(name)
+	go audio.MusicQueue.AddSong(name)
 	c.String(http.StatusOK, "OK")
 }
 
 func main() {
-	//router := gin.Default()
-	//router.GET("/play/:name", play)
+	router := gin.Default()
+	router.GET("/play/:name", play)
+	go audioPlayer.Start()
 
-	//router.Run("localhost:1337")
-
-	audioPlayer.Play("good.mp3")
+	router.Run("localhost:1337")
 }

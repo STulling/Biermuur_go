@@ -9,12 +9,14 @@ const (
 	ledCounts  = 360
 	gpioPin    = 21
 	freq       = 800000
-	width      = 20
-	height     = 18
+	Width      = 20
+	Height     = 18
 )
 
 var (
-	strip ws
+	strip     ws
+	Primary   uint32 = RGBToColor(0, 255, 0)
+	Secondary uint32 = RGBToColor(0, 0, 0)
 )
 
 type ws struct {
@@ -38,22 +40,26 @@ func (ws *ws) leds() []uint32 {
 	return strip.ws2811.Leds(0)
 }
 
+func Show() {
+	strip.ws2811.Render()
+}
+
 func SetPixelColor(x int, y int, color uint32) {
 	if x < 0 || y < 0 {
 		return
 	}
-	if x >= width || y >= height {
+	if x >= Width || y >= Height {
 		return
 	}
 	if y%2 == 1 {
-		x = width - 1 - x
+		x = Width - 1 - x
 	}
-	strip.leds()[x+y*width] = color
+	strip.leds()[x+y*Width] = color
 }
 
 func Clear() {
 	for i := 0; i < len(strip.leds()); i++ {
-		strip.leds()[i] = 0
+		strip.leds()[i] = Secondary
 	}
 }
 
