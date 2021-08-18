@@ -1,6 +1,7 @@
 package effectlib
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/STulling/Biermuur_go/display"
@@ -27,6 +28,9 @@ func Wave(rms float64, pitch float64) {
 }
 
 func Clear(rms float64, pitch float64) {
+	fmt.Println("here")
 	display.Clear()
+	fmt.Println("there")
 	display.Show()
+	fmt.Println("done")
 }

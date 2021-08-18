@@ -38,7 +38,6 @@ func (audioPlayer *AudioPlayer) Start() {
 
 	Init(sr, 10*blockSize)
 	Play()
-	select {}
 }
 
 func chk(err error) {

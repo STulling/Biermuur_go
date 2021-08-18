@@ -32,6 +32,7 @@ func RunDisplayPipe() {
 	display.Init()
 	for {
 		data := <-ToDisplay
+		fmt.Println(fmt.Sprint(data))
 		callback(data[0], data[1])
 	}
 }

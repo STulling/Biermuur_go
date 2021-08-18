@@ -70,7 +70,7 @@ func main() {
 	router.GET("/api/common/:action", simpleAction)
 
 	go displaycontroller.RunDisplayPipe()
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 3)
 	go audioPlayer.Start()
 
 	router.Run("localhost:1337")
