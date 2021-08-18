@@ -15,7 +15,6 @@ const (
 
 var (
 	mu         sync.Mutex
-	mixer      Mixer
 	MusicQueue Queue
 	samples    [][2]float64
 	buf        []byte
@@ -35,7 +34,7 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 
 	Close()
 
-	mixer = Mixer{}
+	MusicQueue = Queue{}
 
 	numBytes := bufferSize * 4
 	samples = make([][2]float64, bufferSize)
@@ -94,16 +93,12 @@ func Unlock() {
 }
 
 // Play starts playing all provided Streamers through the speaker.
-func Play() {
-	mu.Lock()
-	mixer.Add(&MusicQueue)
-	mu.Unlock()
-}
+func Play() {}
 
 // Clear removes all currently playing Streamers from the speaker.
 func Clear() {
 	mu.Lock()
-	mixer.Clear()
+	MusicQueue.Clear()
 	mu.Unlock()
 }
 
@@ -111,7 +106,7 @@ func Clear() {
 // data is sent and started playing.
 func update() {
 	mu.Lock()
-	mixer.Stream(samples)
+	MusicQueue.Stream(samples)
 	mu.Unlock()
 
 	for i := range samples {
