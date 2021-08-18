@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/STulling/Biermuur_go/audio"
 	"github.com/STulling/Biermuur_go/display"
@@ -69,6 +70,7 @@ func main() {
 	router.GET("/api/playlists/play/:name", playPlaylist)
 	router.GET("/api/common/:action", simpleAction)
 	display.Init()
+	time.Sleep(time.Second * 3)
 	displaycontroller.SetCallback("clear")
 	go displaycontroller.RunDisplayPipe()
 	go audioPlayer.Start()
