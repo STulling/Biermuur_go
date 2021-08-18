@@ -12,7 +12,7 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	c1 := make(chan float64)
 
 	go calcRMS(block, c1)
-	//tone := calcFFT(block)
+	tone := calcFFT(block)
 	rms := 0.
 
 	select {
@@ -20,7 +20,7 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 		rms = x
 	}
 
-	return rms, 0
+	return rms, tone
 }
 
 func calcRMS(block [][2]float64, c chan float64) {
