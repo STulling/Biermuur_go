@@ -1,7 +1,6 @@
 package effectlib
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/STulling/Biermuur_go/display"
@@ -21,16 +20,13 @@ func Wave(rms float64, pitch float64) {
 		x_array[x] = int(rms*display.Height/2*math.Sin(x_val+t) + display.Height/2)
 	}
 	for x := 0; x < display.Width; x++ {
-		display.SetPixelColor(x, int(x_array[x]), display.Primary)
-		display.SetPixelColor(x, int(x_array[x]-1), display.Primary)
+		display.SetPixelColor(x, x_array[x], display.Primary)
+		display.SetPixelColor(x, x_array[x]-1, display.Primary)
 	}
 	display.Render()
 }
 
 func Clear(rms float64, pitch float64) {
-	fmt.Println("here")
 	display.Clear()
-	fmt.Println("there")
 	display.Render()
-	fmt.Println("done")
 }
