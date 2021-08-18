@@ -9,7 +9,7 @@ import (
 )
 
 func Load(file string) beep.Streamer {
-	f, err := os.Open(file)
+	f, err := os.Open(file + ".mp3")
 	if err != nil {
 		log.Fatal(err)
 	}

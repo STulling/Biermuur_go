@@ -1,7 +1,15 @@
 package musicio
 
-import "github.com/STulling/Biermuur_go/musicio/musicutil"
+import (
+	"strings"
+
+	"github.com/STulling/Biermuur_go/musicio/musicutil"
+)
 
 func ListSongs() []string {
-	return musicutil.ListFiles(musicutil.MusicFolder)
+	songs := musicutil.ListFiles(musicutil.MusicFolder)
+	for i, song := range songs {
+		songs[i] = strings.TrimSuffix(song, ".mp3")
+	}
+	return songs
 }
