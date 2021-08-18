@@ -93,6 +93,5 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
-	defer strip.close()
 	Render()
 }
