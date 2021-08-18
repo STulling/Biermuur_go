@@ -7,6 +7,10 @@ import (
 	"github.com/STulling/Biermuur_go/effectlib"
 )
 
+const (
+	offset = 0.05
+)
+
 var (
 	callbacks = map[string]func(float64, float64){
 		"wave":  effectlib.Wave,
@@ -14,6 +18,7 @@ var (
 		"snake": effectlib.Snake,
 		"debug": debug,
 	}
+	tone = 0.
 )
 
 func debug(arg1 float64, arg2 float64) {
@@ -33,7 +38,12 @@ func RunDisplayPipe() {
 	display.Init()
 	for {
 		data := <-ToDisplay
-		display.Primary = effectlib.Wheel(uint8(data[1] * 255))
+		if data[1] > tone {
+			tone += offset
+		} else if data[1] < tone {
+			tone -= offset
+		}
+		display.Primary = effectlib.Wheel(uint8(tone * 255))
 		callback(data[0], data[1])
 	}
 }
