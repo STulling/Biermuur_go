@@ -20,7 +20,7 @@ func debug(arg1 float64, arg2 float64) {
 }
 
 var (
-	callback  func(float64, float64) = callbacks["clear"]
+	callback  func(float64, float64) = callbacks["wave"]
 	ToDisplay chan [2]float64        = make(chan [2]float64, 0)
 )
 
