@@ -1,6 +1,7 @@
 package audio
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/STulling/Biermuur_go/audio/processing"
@@ -16,6 +17,7 @@ type Queue struct {
 
 func (q *Queue) AddSong(name string) {
 	streamer := musicio.Load(name)
+	fmt.Println("Added song: " + fmt.Sprint(streamer))
 	q.Add(streamer)
 }
 
