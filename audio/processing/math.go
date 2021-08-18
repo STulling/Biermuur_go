@@ -52,7 +52,7 @@ func argmax(list []float64) int {
 }
 
 func calcFFT(block [][2]float64) float64 {
-	for i, _ := range channel {
+	for i := range channel {
 		channel[i] = block[i][0]
 	}
 	fft := fft.FFTReal(channel[:])

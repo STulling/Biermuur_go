@@ -41,7 +41,7 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 	buf = make([]byte, numBytes)
 
 	var err error
-	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*8)
+	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*16)
 	if err != nil {
 		return errors.Wrap(err, "failed to initialize speaker")
 	}
