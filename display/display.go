@@ -80,6 +80,7 @@ func Init() {
 	opt.Channels[0].Brightness = brightness
 	opt.Channels[0].LedCount = ledCounts
 	opt.Channels[0].GpioPin = gpioPin
+	opt.Channels[0].Gamma = make([]byte, 0)
 	opt.Frequency = freq
 
 	ws2811, err := ws281x.MakeWS2811(&opt)
