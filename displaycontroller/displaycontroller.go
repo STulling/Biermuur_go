@@ -11,6 +11,7 @@ var (
 	callbacks = map[string]func(float64, float64){
 		"wave":  effectlib.Wave,
 		"clear": effectlib.Clear,
+		"snake": effectlib.Snake,
 		"debug": debug,
 	}
 )
@@ -20,7 +21,7 @@ func debug(arg1 float64, arg2 float64) {
 }
 
 var (
-	callback  func(float64, float64) = callbacks["wave"]
+	callback  func(float64, float64) = callbacks["snake"]
 	ToDisplay chan [2]float64        = make(chan [2]float64, 0)
 )
 

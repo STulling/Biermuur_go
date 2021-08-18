@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	t       float64 = 0
-	x_array []int   = make([]int, display.Width)
+	t       float64     = 0
+	x_array []int       = make([]int, display.Width)
+	snake   [][2]uint32 = make([][2]uint32, display.Width)
 )
 
 func Wave(rms float64, pitch float64) {
@@ -22,6 +23,18 @@ func Wave(rms float64, pitch float64) {
 	for x := 0; x < display.Width; x++ {
 		display.SetPixelColor(x, x_array[x], display.Primary)
 		display.SetPixelColor(x, x_array[x]-1, display.Primary)
+	}
+	display.Render()
+}
+
+func Snake(rms float64, pitch float64) {
+	display.SetStrip(display.Secondary)
+	color := display.Primary
+	height := uint32(pitch * display.Height)
+	snake = append(snake[1:], [2]uint32{height, color})
+	for i, data := range snake {
+		display.SetPixelColor(i, int(data[0]), data[1])
+		display.SetPixelColor(i, int(data[0])+1, data[1])
 	}
 	display.Render()
 }
