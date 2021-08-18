@@ -71,9 +71,8 @@ func main() {
 	go mathprocessor.RunCalculationPipe()
 	audio.Init(beep.SampleRate(44100), 1024)
 	audio.Play()
-	go audio.MusicQueue.AddSong("good")
 
-	router.Run("localhost:1337")
+	router.Run("0.0.0.0:1337")
 }
 
 /*
