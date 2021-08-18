@@ -39,6 +39,7 @@ func (ws *ws) close() {
 }
 
 func (ws *ws) leds() []uint32 {
+	fmt.Println(len(strip.ws2811.Leds(0)))
 	return strip.ws2811.Leds(0)
 }
 
