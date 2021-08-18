@@ -12,7 +12,7 @@ var (
 )
 
 func Wave(rms float64, pitch float64) {
-	display.Clear()
+	display.SetStrip(display.Secondary)
 	dt := 0.1 * (1 + 3*pitch)
 	t += dt
 	for x := 0; x < display.Width; x++ {
@@ -23,5 +23,10 @@ func Wave(rms float64, pitch float64) {
 		display.SetPixelColor(x, int(x_array[x]), display.Primary)
 		display.SetPixelColor(x, int(x_array[x]-1), display.Primary)
 	}
+	display.Show()
+}
+
+func Clear(rms float64, pitch float64) {
+	display.Clear()
 	display.Show()
 }

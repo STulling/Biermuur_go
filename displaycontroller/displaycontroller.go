@@ -9,6 +9,7 @@ import (
 var (
 	callbacks = map[string]func(float64, float64){
 		"wave":  effectlib.Wave,
+		"clear": effectlib.Clear,
 		"debug": debug,
 	}
 )

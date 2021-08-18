@@ -57,9 +57,15 @@ func SetPixelColor(x int, y int, color uint32) {
 	strip.leds()[x+y*Width] = color
 }
 
+func SetStrip(color uint32) {
+	for i := 0; i < len(strip.leds()); i++ {
+		strip.leds()[i] = color
+	}
+}
+
 func Clear() {
 	for i := 0; i < len(strip.leds()); i++ {
-		strip.leds()[i] = Secondary
+		strip.leds()[i] = 0
 	}
 }
 

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/STulling/Biermuur_go/audio"
 	"github.com/STulling/Biermuur_go/displaycontroller"
 	"github.com/STulling/Biermuur_go/musicio"
+	"github.com/STulling/Biermuur_go/musicio/playlists"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,6 +41,23 @@ func setAction(c *gin.Context) {
 	c.String(http.StatusOK, "OK")
 }
 
+func playPlaylist(c *gin.Context) {
+	name := c.Param("name")
+	go playlists.PlayPlaylist(name)
+	c.String(http.StatusOK, "OK")
+}
+
+func simpleAction(c *gin.Context) {
+	switch action := c.Param("action"); action {
+	case "clear":
+		audio.MusicQueue.Clear()
+		displaycontroller.SetCallback("clear")
+	default:
+		fmt.Printf("Unknown action: %s.\n", action)
+	}
+	c.String(http.StatusOK, "OK")
+}
+
 func main() {
 	router := gin.Default()
 	router.GET("/api/songs/play/:name", play)
@@ -47,6 +66,7 @@ func main() {
 	router.GET("/api/songs", list)
 	router.GET("/api/playlists", listPlaylists)
 	router.GET("/api/playlists/play/:name", playPlaylist)
+	router.GET("/api/common/:action", simpleAction)
 	go audioPlayer.Start()
 
 	displaycontroller.SetCallback("debug")

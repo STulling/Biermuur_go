@@ -24,6 +24,10 @@ func (q *Queue) addRandom() {
 	q.Add(streamer)
 }
 
+func (q *Queue) Clear() {
+	q.streamers = q.streamers[len(q.streamers):]
+}
+
 func (q *Queue) Add(streamers ...beep.Streamer) {
 	q.streamers = append(q.streamers, streamers...)
 	if q.Requested {
