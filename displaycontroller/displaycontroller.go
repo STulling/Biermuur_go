@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	offset = 0.05
+	offset = 0.1
 )
 
 var (
