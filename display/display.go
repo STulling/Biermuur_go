@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	Strip     ws
+	strip     ws
 	Primary   uint32 = RGBToColor(0, 255, 0)
 	Secondary uint32 = RGBToColor(0, 0, 0)
 )
@@ -38,8 +38,8 @@ func (ws *ws) close() {
 	ws.ws2811.Fini()
 }
 
-func (ws *ws) Render() {
-	ws.ws2811.Render()
+func Render() {
+	strip.ws2811.Render()
 }
 
 func SetPixelColor(x int, y int, color uint32) {
@@ -52,18 +52,18 @@ func SetPixelColor(x int, y int, color uint32) {
 	if y%2 == 1 {
 		x = Width - 1 - x
 	}
-	Strip.ws2811.Leds(0)[x+y*Width] = color
+	strip.ws2811.Leds(0)[x+y*Width] = color
 }
 
 func SetStrip(color uint32) {
 	for i := 0; i < ledCounts; i++ {
-		Strip.ws2811.Leds(0)[i] = color
+		strip.ws2811.Leds(0)[i] = color
 	}
 }
 
 func Clear() {
 	for i := 0; i < ledCounts; i++ {
-		Strip.ws2811.Leds(0)[i] = 0
+		strip.ws2811.Leds(0)[i] = 0
 	}
 }
 
@@ -83,16 +83,16 @@ func Init() {
 		panic(err)
 	}
 
-	Strip = ws{
+	strip = ws{
 		ws2811: ws2811,
 	}
 
 	fmt.Println("Led strip hardware information: " + fmt.Sprint(ws281x.HwDetect()))
 
-	err = Strip.init()
+	err = strip.init()
 	if err != nil {
 		panic(err)
 	}
-	defer Strip.close()
-	Strip.ws2811.Render()
+	defer strip.close()
+	Render()
 }
