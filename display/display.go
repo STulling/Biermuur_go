@@ -38,13 +38,11 @@ func (ws *ws) close() {
 	ws.ws2811.Fini()
 }
 
-func (ws *ws) leds() []uint32 {
-	fmt.Println(len(strip.ws2811.Leds(0)))
-	return strip.ws2811.Leds(0)
-}
-
 func Show() {
-	strip.ws2811.Render()
+	err := strip.ws2811.Render()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func SetPixelColor(x int, y int, color uint32) {
@@ -57,18 +55,18 @@ func SetPixelColor(x int, y int, color uint32) {
 	if y%2 == 1 {
 		x = Width - 1 - x
 	}
-	strip.leds()[x+y*Width] = color
+	strip.ws2811.Leds(0)[x+y*Width] = color
 }
 
 func SetStrip(color uint32) {
-	for i := 0; i < len(strip.leds()); i++ {
-		strip.leds()[i] = color
+	for i := 0; i < ledCounts; i++ {
+		strip.ws2811.Leds(0)[i] = color
 	}
 }
 
 func Clear() {
-	for i := 0; i < len(strip.leds()); i++ {
-		strip.leds()[i] = 0
+	for i := 0; i < ledCounts; i++ {
+		strip.ws2811.Leds(0)[i] = 0
 	}
 }
 
@@ -81,7 +79,6 @@ func Init() {
 	opt.Channels[0].Brightness = brightness
 	opt.Channels[0].LedCount = ledCounts
 	opt.Channels[0].GpioPin = gpioPin
-	opt.Channels[0].Gamma = nil
 	opt.Frequency = freq
 
 	ws2811, err := ws281x.MakeWS2811(&opt)
