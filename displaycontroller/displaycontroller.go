@@ -32,6 +32,7 @@ func RunDisplayPipe() {
 	display.Init()
 	for {
 		data := <-ToDisplay
+		display.Primary = effectlib.Wheel(uint8(data[1] * 255))
 		callback(data[0], data[1])
 	}
 }
