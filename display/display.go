@@ -97,5 +97,5 @@ func Init() {
 		panic(err)
 	}
 	defer strip.close()
-	Clear()
+	Show()
 }
