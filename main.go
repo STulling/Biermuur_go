@@ -70,11 +70,10 @@ func main() {
 	router.GET("/api/common/:action", simpleAction)
 	display.Init()
 
-	displaycontroller.SetCallback("clear")
 	go displaycontroller.RunDisplayPipe()
 	go audioPlayer.Start()
 
-	router.Run("0.0.0.0:1337")
+	router.Run("localhost:1337")
 }
 
 /*

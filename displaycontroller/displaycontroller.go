@@ -19,8 +19,8 @@ func debug(arg1 float64, arg2 float64) {
 }
 
 var (
-	callback  func(float64, float64)
-	ToDisplay chan [2]float64 = make(chan [2]float64, 0)
+	callback  func(float64, float64) = callbacks["clear"]
+	ToDisplay chan [2]float64        = make(chan [2]float64, 0)
 )
 
 func SetCallback(name string) {
