@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/STulling/Biermuur_go/audio"
 	"github.com/STulling/Biermuur_go/displaycontroller"
@@ -69,6 +70,7 @@ func main() {
 	router.GET("/api/common/:action", simpleAction)
 
 	go displaycontroller.RunDisplayPipe()
+	time.Sleep(time.Second * 5)
 	go audioPlayer.Start()
 
 	router.Run("localhost:1337")
