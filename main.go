@@ -9,11 +9,8 @@ import (
 	"github.com/STulling/Biermuur_go/mathprocessor"
 	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/STulling/Biermuur_go/musicio/playlists"
+	"github.com/faiface/beep"
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	audioPlayer = audio.CreateAudioPlayer()
 )
 
 func play(c *gin.Context) {
@@ -69,11 +66,14 @@ func main() {
 	router.GET("/api/playlists/play/:name", playPlaylist)
 	router.GET("/api/common/:action", simpleAction)
 
+	fmt.Println("Starting...")
 	go displaycontroller.RunDisplayPipe()
 	go mathprocessor.RunCalculationPipe()
-	go audioPlayer.Start()
+	audio.Init(beep.SampleRate(44100), 1024)
+	audio.Play()
+	go audio.MusicQueue.AddSong("good")
 
-	router.Run("0.0.0.0:1337")
+	router.Run("localhost:1337")
 }
 
 /*

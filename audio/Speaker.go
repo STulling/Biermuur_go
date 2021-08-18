@@ -3,9 +3,14 @@ package audio
 import (
 	"sync"
 
+	"github.com/STulling/Biermuur_go/mathprocessor"
 	"github.com/faiface/beep"
 	"github.com/hajimehoshi/oto"
 	"github.com/pkg/errors"
+)
+
+const (
+	blockSize = 1024
 )
 
 var (
@@ -37,7 +42,7 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 	buf = make([]byte, numBytes)
 
 	var err error
-	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes)
+	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*4)
 	if err != nil {
 		return errors.Wrap(err, "failed to initialize speaker")
 	}
@@ -125,6 +130,6 @@ func update() {
 			buf[i*4+c*2+1] = high
 		}
 	}
-
+	mathprocessor.ToCalculate <- samples
 	player.Write(buf)
 }
