@@ -3,7 +3,6 @@ package audio
 import (
 	"sync"
 
-	"github.com/STulling/Biermuur_go/audio/processing"
 	"github.com/faiface/beep"
 	"github.com/hajimehoshi/oto"
 	"github.com/pkg/errors"
@@ -126,6 +125,6 @@ func update() {
 			buf[i*4+c*2+1] = high
 		}
 	}
-	processing.ProcessBlock(samples)
+
 	player.Write(buf)
 }

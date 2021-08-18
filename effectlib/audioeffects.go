@@ -24,13 +24,13 @@ func Wave(rms float64, pitch float64) {
 		display.SetPixelColor(x, int(x_array[x]), display.Primary)
 		display.SetPixelColor(x, int(x_array[x]-1), display.Primary)
 	}
-	display.Show()
+	display.Strip.Render()
 }
 
 func Clear(rms float64, pitch float64) {
 	fmt.Println("here")
 	display.Clear()
 	fmt.Println("there")
-	display.Show()
+	display.Strip.Render()
 	fmt.Println("done")
 }

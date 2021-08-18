@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/STulling/Biermuur_go/audio/processing"
 	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/faiface/beep"
 )
@@ -69,6 +70,7 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 		// We update the number of filled samples.
 		filled += n
 	}
+	go processing.ProcessBlock(samples)
 	return len(samples), true
 }
 
