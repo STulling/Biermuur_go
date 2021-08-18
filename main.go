@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/STulling/Biermuur_go/audio"
+	"github.com/STulling/Biermuur_go/display"
 	"github.com/STulling/Biermuur_go/displaycontroller"
 	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/STulling/Biermuur_go/musicio/playlists"
@@ -67,10 +68,10 @@ func main() {
 	router.GET("/api/playlists", listPlaylists)
 	router.GET("/api/playlists/play/:name", playPlaylist)
 	router.GET("/api/common/:action", simpleAction)
-	go audioPlayer.Start()
-
+	display.Init()
 	displaycontroller.SetCallback("clear")
 	go displaycontroller.RunDisplayPipe()
+	go audioPlayer.Start()
 
 	router.Run("0.0.0.0:1337")
 }

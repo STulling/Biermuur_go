@@ -1,6 +1,8 @@
 package display
 
 import (
+	"fmt"
+
 	ws281x "github.com/rpi-ws281x/rpi-ws281x-go"
 )
 
@@ -85,9 +87,11 @@ func Init() {
 		panic(err)
 	}
 
-	strip := ws{
+	strip = ws{
 		ws2811: ws2811,
 	}
+
+	fmt.Println("Led strip hardware information: " + fmt.Sprint(ws281x.HwDetect()))
 
 	err = strip.init()
 	if err != nil {
