@@ -11,20 +11,15 @@ import (
 func ProcessBlock(block [][2]float64) {
 
 	c1 := make(chan float64)
-	c2 := make(chan float64)
 
 	var result [2]float64
 
 	go calcRMS(block, c1)
-	go calcFFT(block, c2)
+	result[1] = calcFFT(block)
 
-	for i := 0; i < 2; i++ {
-		select {
-		case rms := <-c1:
-			result[0] = rms
-		case fft := <-c2:
-			result[1] = fft
-		}
+	select {
+	case rms := <-c1:
+		result[0] = rms
 	}
 
 	displaycontroller.ToDisplay <- result
@@ -53,7 +48,7 @@ func argmax(list []float64) int {
 	return index
 }
 
-func calcFFT(block [][2]float64, c chan float64) {
+func calcFFT(block [][2]float64) float64 {
 	channel := make([]float64, len(block))
 	for i, x := range block {
 		channel[i] = x[0]
@@ -64,5 +59,5 @@ func calcFFT(block [][2]float64, c chan float64) {
 		better[i] = cmplx.Abs(val)
 	}
 	color := float64(argmax(better))
-	c <- math.Max(0., math.Min(color*10., 255.)) / 255.
+	return math.Max(0., math.Min(color*10., 255.)) / 255.
 }
