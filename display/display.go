@@ -39,6 +39,7 @@ func (ws *ws) close() {
 }
 
 func Show() {
+	fmt.Println(strip)
 	err := strip.ws2811.Render()
 	if err != nil {
 		panic(err)
