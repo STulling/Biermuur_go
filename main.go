@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/STulling/Biermuur_go/audio"
 	"github.com/STulling/Biermuur_go/displaycontroller"
+	"github.com/STulling/Biermuur_go/mathprocessor"
 	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/STulling/Biermuur_go/musicio/playlists"
 	"github.com/gin-gonic/gin"
@@ -70,7 +70,7 @@ func main() {
 	router.GET("/api/common/:action", simpleAction)
 
 	go displaycontroller.RunDisplayPipe()
-	time.Sleep(time.Second * 3)
+	go mathprocessor.RunCalculationPipe()
 	go audioPlayer.Start()
 
 	router.Run("0.0.0.0:1337")

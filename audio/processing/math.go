@@ -4,25 +4,23 @@ import (
 	"math"
 	"math/cmplx"
 
-	"github.com/STulling/Biermuur_go/displaycontroller"
 	"github.com/mjibson/go-dsp/fft"
 )
 
-func ProcessBlock(block [][2]float64) {
+func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	c1 := make(chan float64)
 
-	var result [2]float64
-
 	go calcRMS(block, c1)
-	result[1] = calcFFT(block)
+	tone := calcFFT(block)
+	rms := 0.
 
 	select {
-	case rms := <-c1:
-		result[0] = rms
+	case x := <-c1:
+		rms = x
 	}
 
-	displaycontroller.ToDisplay <- result
+	return rms, tone
 }
 
 func calcRMS(block [][2]float64, c chan float64) {
