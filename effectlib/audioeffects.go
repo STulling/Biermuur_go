@@ -28,6 +28,7 @@ func Wave(rms float64, pitch float64) {
 }
 
 func Clear(rms float64, pitch float64) {
+	display.Init()
 	fmt.Println("here")
 	display.Clear()
 	fmt.Println("there")
