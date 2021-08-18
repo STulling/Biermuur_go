@@ -10,17 +10,21 @@ import (
 
 func ProcessBlock(block [][2]float64) {
 
-	c1 := make(chan float64)
+	//c1 := make(chan float64)
 
 	var result [2]float64
 
-	go calcRMS(block, c1)
-	result[1] = calcFFT(block)
+	/*
+		go calcRMS(block, c1)
+		result[1] = calcFFT(block)
 
-	select {
-	case rms := <-c1:
-		result[0] = rms
-	}
+		select {
+		case rms := <-c1:
+			result[0] = rms
+		}
+	*/
+	result[0] = 0
+	result[1] = 0
 
 	displaycontroller.ToDisplay <- result
 }
