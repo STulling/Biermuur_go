@@ -14,13 +14,13 @@ const (
 )
 
 var (
-	mu         sync.Mutex
-	MusicQueue Queue
-	samples    [][2]float64
-	buf        []byte
-	context    *oto.Context
-	player     *oto.Player
-	done       chan struct{}
+	mu           sync.Mutex
+	MusicQueue   Queue
+	samples      [][2]float64
+	samplebuffer chan []byte
+	context      *oto.Context
+	player       *oto.Player
+	done         chan struct{}
 )
 
 // Init initializes audio playback through speaker. Must be called before using this package.
@@ -38,10 +38,10 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 
 	numBytes := bufferSize * 4
 	samples = make([][2]float64, bufferSize)
-	buf = make([]byte, numBytes)
+	samplebuffer = make(chan []byte, 10)
 
 	var err error
-	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*16)
+	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*2)
 	if err != nil {
 		return errors.Wrap(err, "failed to initialize speaker")
 	}
@@ -56,6 +56,15 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 				update()
 			case <-done:
 				return
+			}
+		}
+	}()
+
+	go func() {
+		for {
+			select {
+			case buf := <-samplebuffer:
+				player.Write(buf)
 			}
 		}
 	}()
@@ -108,6 +117,7 @@ func update() {
 	mu.Lock()
 	MusicQueue.Stream(samples)
 	mu.Unlock()
+	buf := make([]byte, 1024*4)
 
 	for i := range samples {
 		for c := range samples[i] {
@@ -126,5 +136,5 @@ func update() {
 		}
 	}
 	mathprocessor.ToCalculate <- samples
-	player.Write(buf)
+	samplebuffer <- buf
 }

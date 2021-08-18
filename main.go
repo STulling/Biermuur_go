@@ -72,6 +72,9 @@ func main() {
 	audio.Init(beep.SampleRate(44100), 1024)
 	audio.Play()
 
+	audio.MusicQueue.AddSong("good")
+	select {}
+
 	router.Run("0.0.0.0:1337")
 }
 
