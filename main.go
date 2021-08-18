@@ -73,7 +73,7 @@ func main() {
 	time.Sleep(time.Second * 3)
 	go audioPlayer.Start()
 
-	router.Run("localhost:1337")
+	router.Run("0.0.0.0:1337")
 }
 
 /*
