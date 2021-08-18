@@ -16,5 +16,5 @@ func listPlaylists() []string {
 }
 
 func PlayPlaylist(name string) {
-	audio.MusicQueue.PlayList = musicutil.ReadLines(name)
+	audio.MusicQueue.PlayList = musicutil.ReadLines(path.Join(playlistFolder, name))
 }

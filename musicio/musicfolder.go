@@ -7,7 +7,7 @@ import (
 )
 
 func ListSongs() []string {
-	songs := musicutil.ListFiles(musicutil.MusicFolder)
+	songs := musicutil.ListFilesExtension(musicutil.MusicFolder, "mp3")
 	for i, song := range songs {
 		songs[i] = strings.TrimSuffix(song, ".mp3")
 	}

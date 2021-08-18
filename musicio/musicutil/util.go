@@ -53,3 +53,17 @@ func ListFiles(path string) []string {
 	}
 	return result
 }
+
+func ListFilesExtension(path string, ext string) []string {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	result := make([]string, 0)
+	for _, f := range files {
+		if !f.IsDir() && strings.HasSuffix(f.Name(), ext) {
+			result = append(result, f.Name())
+		}
+	}
+	return result
+}
