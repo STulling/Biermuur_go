@@ -7,6 +7,11 @@ import (
 	"github.com/mjibson/go-dsp/fft"
 )
 
+var (
+	channel = make([]float64, 512)
+	better  = make([]float64, 50)
+)
+
 func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	c1 := make(chan float64)
@@ -47,12 +52,10 @@ func argmax(list []float64) int {
 }
 
 func calcFFT(block [][2]float64) float64 {
-	channel := make([]float64, len(block))
-	for i, x := range block {
-		channel[i] = x[0]
+	for i, _ := range channel {
+		channel[i] = block[i][0]
 	}
 	fft := fft.FFTReal(channel[:])
-	better := make([]float64, 50)
 	for i, val := range fft[11 : 11+50] {
 		better[i] = cmplx.Abs(val)
 	}
