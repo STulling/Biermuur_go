@@ -3,6 +3,7 @@ package displaycontroller
 import (
 	"fmt"
 
+	"github.com/STulling/Biermuur_go/display"
 	"github.com/STulling/Biermuur_go/effectlib"
 )
 
@@ -28,6 +29,7 @@ func SetCallback(name string) {
 }
 
 func RunDisplayPipe() {
+	display.Init()
 	for {
 		data := <-ToDisplay
 		callback(data[0], data[1])
