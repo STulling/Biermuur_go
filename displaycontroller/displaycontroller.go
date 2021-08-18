@@ -44,6 +44,6 @@ func RunDisplayPipe() {
 			tone -= offset
 		}
 		display.Primary = effectlib.Wheel(uint8(tone * 255))
-		callback(data[0], data[1])
+		callback(data[0], tone)
 	}
 }
