@@ -3,7 +3,8 @@ package audio
 import (
 	"math/rand"
 
-	"github.com/STulling/Biermuur_go/io"
+	"github.com/STulling/Biermuur_go/audio/processing"
+	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/faiface/beep"
 )
 
@@ -14,12 +15,12 @@ type Queue struct {
 }
 
 func (q *Queue) AddSong(name string) {
-	streamer := io.Load(name)
+	streamer := musicio.Load(name)
 	q.Add(streamer)
 }
 
 func (q *Queue) addRandom() {
-	streamer := io.Load(q.PlayList[rand.Intn(len(q.PlayList))])
+	streamer := musicio.Load(q.PlayList[rand.Intn(len(q.PlayList))])
 	q.Add(streamer)
 }
 
@@ -63,6 +64,7 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 		// We update the number of filled samples.
 		filled += n
 	}
+	go processing.ProcessBlock(samples)
 	return len(samples), true
 }
 

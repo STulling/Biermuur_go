@@ -1,4 +1,4 @@
-package io
+package musicio
 
 import (
 	"log"

@@ -1,24 +1,34 @@
 package displaycontroller
 
-var (
-	Playlist []string = make([]string, 0)
-	RequestNext chan [2]float64 = make(chan [2]float64, 0)
+import (
+	"fmt"
+
+	"github.com/STulling/Biermuur_go/effectlib"
 )
 
-func requestNext(q audio.Queue) {
-	rand.Seed(time.Now().Unix())
-	streamer := io.Load(o.playlist[rand.Intn(len(o.playlist))])
-	q.Add(streamer)
-	q.Requested = false
+var (
+	callbacks = map[string]func(float64, float64){
+		"wave":  effectlib.Wave,
+		"debug": debug,
+	}
+)
+
+func debug(arg1 float64, arg2 float64) {
+	fmt.Println(fmt.Sprintf("%f", arg1) + " " + fmt.Sprintf("%f", arg2))
 }
 
-func Orchestrate() {
-	for {
-        select {
-        case <-RequestNext:
-            requestNext(q audio.Queue)
-        default:
+var (
+	callback  func(float64, float64)
+	ToDisplay chan [2]float64 = make(chan [2]float64, 0)
+)
 
-        }
-    }
+func SetCallback(name string) {
+	callback = callbacks[name]
+}
+
+func RunDisplayPipe() {
+	for {
+		data := <-ToDisplay
+		callback(data[0], data[1])
+	}
 }
