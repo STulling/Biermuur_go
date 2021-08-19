@@ -29,7 +29,6 @@ func Wave(rms float64, pitch float64) {
 
 func DebugWave(rms float64, pitch float64) {
 	display.SetStrip(display.Secondary)
-	rms = 0.8
 	dt := 0.3 //* (1 + 3*pitch)
 	t += dt
 	for x := 0; x < display.Width; x++ {

@@ -1,7 +1,6 @@
 package processing
 
 import (
-	"encoding/binary"
 	"math"
 	"math/cmplx"
 
@@ -9,20 +8,16 @@ import (
 )
 
 var (
-	better = make([]float64, 50)
-	fblock = make([]float64, 256)
+	channel = make([]float64, 512)
+	better  = make([]float64, 50)
 )
 
-func ProcessBlock(block []byte) (float64, float64) {
+func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	c1 := make(chan float64)
 
-	for i := range fblock {
-		fblock[i] = float64(binary.BigEndian.Uint16([]byte{block[1], block[2]})) / math.Pow(2, 16)
-	}
-
-	go calcRMS(fblock, c1)
-	tone := calcFFT(fblock)
+	go calcRMS(block, c1)
+	tone := calcFFT(block)
 	rms := 0.
 
 	select {
@@ -33,10 +28,10 @@ func ProcessBlock(block []byte) (float64, float64) {
 	return rms, tone
 }
 
-func calcRMS(block []float64, c chan float64) {
+func calcRMS(block [][2]float64, c chan float64) {
 	sum := 0.
 	for _, x := range block {
-		num := x
+		num := x[0]
 		sum += num * num
 	}
 	sum /= float64(len(block))
@@ -56,8 +51,11 @@ func argmax(list []float64) int {
 	return index
 }
 
-func calcFFT(block []float64) float64 {
-	fft := fft.FFTReal(block)
+func calcFFT(block [][2]float64) float64 {
+	for i := range channel {
+		channel[i] = block[i][0]
+	}
+	fft := fft.FFTReal(channel[:])
 	for i, val := range fft[11 : 11+50] {
 		better[i] = cmplx.Abs(val)
 	}
