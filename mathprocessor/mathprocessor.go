@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/STulling/Biermuur_go/audio/processing"
 	"github.com/STulling/Biermuur_go/displaycontroller"
 )
 
@@ -17,8 +18,7 @@ func RunCalculationPipe() {
 		data := <-ToCalculate
 		fmt.Println(time.Since(prevTime))
 		prevTime = time.Now()
-		fmt.Println(data)
-		//rms, tone := processing.ProcessBlock(data)
-		displaycontroller.ToDisplay <- [2]float64{0.8, 0}
+		rms, tone := processing.ProcessBlock(data)
+		displaycontroller.ToDisplay <- [2]float64{rms, tone}
 	}
 }
