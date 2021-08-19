@@ -1,6 +1,7 @@
 package audio
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/STulling/Biermuur_go/mathprocessor"
@@ -92,6 +93,7 @@ func write() {
 		}
 		out = append(buf[:remaining], out...)
 		//err := binary.Read(audio, binary.BigEndian, out)
+		fmt.Println(stream.Info())
 		err := stream.Write()
 		if err != nil {
 			panic(err)
