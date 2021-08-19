@@ -44,7 +44,10 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 	if err != nil {
 		panic(err)
 	}
-	stream.Start()
+	err = stream.Start()
+	if err != nil {
+		panic(err)
+	}
 
 	go func() {
 		for {
