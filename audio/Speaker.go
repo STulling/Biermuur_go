@@ -40,7 +40,7 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 
 	portaudio.Initialize()
 
-	stream, err := portaudio.OpenDefaultStream(2, 0, 44100, len(out), &out)
+	stream, err := portaudio.OpenDefaultStream(0, 2, 44100, len(out), &out)
 	if err != nil {
 		panic(err)
 	}
