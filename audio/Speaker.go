@@ -92,7 +92,10 @@ func write() {
 		}
 		out = append(buf[:remaining], out...)
 		//err := binary.Read(audio, binary.BigEndian, out)
-		stream.Write()
+		err := stream.Write()
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
