@@ -12,7 +12,7 @@ var (
 	better  = make([]float64, 50)
 )
 
-func ProcessBlock(block [][2]float64) (float64, float64) {
+func ProcessBlock(block []byte) (float64, float64) {
 
 	c1 := make(chan float64)
 

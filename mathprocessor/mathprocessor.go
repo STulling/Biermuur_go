@@ -17,8 +17,8 @@ func RunCalculationPipe() {
 		data := <-ToCalculate
 		fmt.Println(time.Since(prevTime))
 		prevTime = time.Now()
-		print(len(data))
-		//rms, tone := float64(data[0]), 0. //processing.ProcessBlock(data)
+		fmt.Println(data)
+		//rms, tone := processing.ProcessBlock(data)
 		displaycontroller.ToDisplay <- [2]float64{0.8, 0}
 	}
 }
