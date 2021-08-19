@@ -16,7 +16,6 @@ package oto
 
 import (
 	"errors"
-	"github.com/STulling/Biermuur_go/mathprocessor"
 	"io"
 	"sync"
 	"time"
@@ -144,7 +143,6 @@ func (d *driverWriter) Write(buf []byte) (int, error) {
 			return written, errClosed
 		}
 		n, err := d.driver.TryWrite(buf)
-		mathprocessor.ToCalculate <- buf
 		written += n
 		buf = buf[n:]
 		if err != nil {
