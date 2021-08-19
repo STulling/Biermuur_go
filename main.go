@@ -69,7 +69,7 @@ func main() {
 	fmt.Println("Starting...")
 	go displaycontroller.RunDisplayPipe()
 	go mathprocessor.RunCalculationPipe()
-	audio.Init(beep.SampleRate(44100), 1024)
+	audio.Init(beep.SampleRate(44100), 16*1024)
 	audio.Play()
 
 	router.Run("0.0.0.0:1337")

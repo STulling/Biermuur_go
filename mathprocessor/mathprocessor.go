@@ -1,18 +1,17 @@
 package mathprocessor
 
 import (
-	"github.com/STulling/Biermuur_go/audio/processing"
 	"github.com/STulling/Biermuur_go/displaycontroller"
 )
 
 var (
-	ToCalculate chan [][2]float64 = make(chan [][2]float64, 0)
+	ToCalculate = make(chan []byte, 0)
 )
 
 func RunCalculationPipe() {
 	for {
-		data := <-ToCalculate
-		rms, tone := processing.ProcessBlock(data)
-		displaycontroller.ToDisplay <- [2]float64{rms, tone}
+		<-ToCalculate
+		//rms, tone := float64(data[0]), 0. //processing.ProcessBlock(data)
+		displaycontroller.ToDisplay <- [2]float64{0.8, 0}
 	}
 }

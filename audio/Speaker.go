@@ -3,9 +3,8 @@ package audio
 import (
 	"sync"
 
-	"github.com/STulling/Biermuur_go/mathprocessor"
+	"github.com/STulling/Biermuur_go/audio/oto"
 	"github.com/faiface/beep"
-	"github.com/hajimehoshi/oto"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +16,7 @@ var (
 	mu           sync.Mutex
 	MusicQueue   Queue
 	samples      [][2]float64
-	samplebuffer chan []byte
+	buf          []byte
 	context      *oto.Context
 	player       *oto.Player
 	done         chan struct{}
@@ -38,10 +37,10 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 
 	numBytes := bufferSize * 4
 	samples = make([][2]float64, bufferSize)
-	samplebuffer = make(chan []byte, 10)
+	buf = make([]byte, numBytes)
 
 	var err error
-	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*2)
+	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes)
 	if err != nil {
 		return errors.Wrap(err, "failed to initialize speaker")
 	}
@@ -56,15 +55,6 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 				update()
 			case <-done:
 				return
-			}
-		}
-	}()
-
-	go func() {
-		for {
-			select {
-			case buf := <-samplebuffer:
-				player.Write(buf)
 			}
 		}
 	}()
@@ -117,7 +107,6 @@ func update() {
 	mu.Lock()
 	MusicQueue.Stream(samples)
 	mu.Unlock()
-	buf := make([]byte, 1024*4)
 
 	for i := range samples {
 		for c := range samples[i] {
@@ -135,6 +124,5 @@ func update() {
 			buf[i*4+c*2+1] = high
 		}
 	}
-	mathprocessor.ToCalculate <- samples
-	samplebuffer <- buf
+	player.Write(buf)
 }
