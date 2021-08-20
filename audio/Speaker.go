@@ -1,13 +1,12 @@
 package audio
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/STulling/Biermuur_go/mathprocessor"
 	"github.com/faiface/beep"
-	"github.com/gordonklaus/portaudio"
 	"github.com/hajimehoshi/oto"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -15,15 +14,13 @@ const (
 )
 
 var (
-	mu         sync.Mutex
-	MusicQueue Queue
-	samples    [][2]float64
-	buf        []byte
-	context    *oto.Context
-	player     *oto.Player
-	done       chan struct{}
-	out        []byte
-	stream     portaudio.Stream
+	mu           sync.Mutex
+	MusicQueue   Queue
+	samples      [][2]float64
+	samplebuffer chan []byte
+	context      *oto.Context
+	player       *oto.Player
+	done         chan struct{}
 )
 
 // Init initializes audio playback through speaker. Must be called before using this package.
@@ -32,22 +29,25 @@ var (
 // bufferSize means lower CPU usage and more reliable playback. Lower bufferSize means better
 // responsiveness and less delay.
 func Init(sampleRate beep.SampleRate, bufferSize int) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	Close()
 
 	MusicQueue = Queue{}
+
+	numBytes := bufferSize * 4
 	samples = make([][2]float64, bufferSize)
-	out = make([]byte, len(samples)*4)
-	buf = make([]byte, len(samples)*4)
+	samplebuffer = make(chan []byte, 10)
 
-	portaudio.Initialize()
+	var err error
+	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*2)
+	if err != nil {
+		return errors.Wrap(err, "failed to initialize speaker")
+	}
+	player = context.NewPlayer()
 
-	stream, err := portaudio.OpenDefaultStream(0, 2, 44100, len(out), &out)
-	if err != nil {
-		panic(err)
-	}
-	err = stream.Start()
-	if err != nil {
-		panic(err)
-	}
+	done = make(chan struct{})
 
 	go func() {
 		for {
@@ -56,6 +56,15 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 				update()
 			case <-done:
 				return
+			}
+		}
+	}()
+
+	go func() {
+		for {
+			select {
+			case buf := <-samplebuffer:
+				player.Write(buf)
 			}
 		}
 	}()
@@ -79,6 +88,19 @@ func Close() {
 	}
 }
 
+// Lock locks the speaker. While locked, speaker won't pull new data from the playing Stramers. Lock
+// if you want to modify any currently playing Streamers to avoid race conditions.
+//
+// Always lock speaker for as little time as possible, to avoid playback glitches.
+func Lock() {
+	mu.Lock()
+}
+
+// Unlock unlocks the speaker. Call after modifying any currently playing Streamer.
+func Unlock() {
+	mu.Unlock()
+}
+
 // Play starts playing all provided Streamers through the speaker.
 func Play() {}
 
@@ -89,27 +111,13 @@ func Clear() {
 	mu.Unlock()
 }
 
-func write() {
-	for remaining := int(blockSize); remaining > 0; remaining -= len(out) {
-		if len(out) > remaining {
-			out = out[:remaining]
-		}
-		out = append(buf[:remaining], out...)
-		//err := binary.Read(audio, binary.BigEndian, out)
-		fmt.Println(stream.Info())
-		err := stream.Write()
-		if err != nil {
-			panic(err)
-		}
-	}
-}
-
 // update pulls new data from the playing Streamers and sends it to the speaker. Blocks until the
 // data is sent and started playing.
 func update() {
 	mu.Lock()
 	MusicQueue.Stream(samples)
 	mu.Unlock()
+	buf := make([]byte, 1024*4)
 
 	for i := range samples {
 		for c := range samples[i] {
@@ -128,5 +136,5 @@ func update() {
 		}
 	}
 	mathprocessor.ToCalculate <- samples
-	write()
+	samplebuffer <- buf
 }
