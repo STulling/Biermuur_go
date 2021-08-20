@@ -1,0 +1,8 @@
+package globals
+
+const (
+	BLOCKSIZE = 1024
+	BITDEPTH = 2
+	CHANNELS = 2
+	BUFFERSIZE = BLOCKSIZE * BITDEPTH * CHANNELS
+)

@@ -1,11 +1,11 @@
 package audio
 
 import (
+	"github.com/STulling/Biermuur_go/globals"
 	"sync"
 
-	"github.com/STulling/Biermuur_go/mathprocessor"
+	"github.com/STulling/Biermuur_go/audio/oto"
 	"github.com/faiface/beep"
-	"github.com/hajimehoshi/oto"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +17,7 @@ var (
 	mu           sync.Mutex
 	MusicQueue   Queue
 	samples      [][2]float64
-	samplebuffer chan []byte
+	buf          []byte
 	context      *oto.Context
 	player       *oto.Player
 	done         chan struct{}
@@ -28,7 +28,7 @@ var (
 // The bufferSize argument specifies the number of samples of the speaker's buffer. Bigger
 // bufferSize means lower CPU usage and more reliable playback. Lower bufferSize means better
 // responsiveness and less delay.
-func Init(sampleRate beep.SampleRate, bufferSize int) error {
+func Init(sampleRate beep.SampleRate, bufferAmount int) error {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -36,12 +36,12 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 
 	MusicQueue = Queue{}
 
-	numBytes := bufferSize * 4
-	samples = make([][2]float64, bufferSize)
-	samplebuffer = make(chan []byte, 10)
+	numBytes := bufferAmount * globals.BUFFERSIZE
+	samples = make([][2]float64, bufferAmount * globals.BLOCKSIZE)
+	buf = make([]byte, numBytes)
 
 	var err error
-	context, err = oto.NewContext(int(sampleRate), 2, 2, numBytes*2)
+	context, err = oto.NewContext(int(sampleRate), globals.CHANNELS, globals.BITDEPTH, numBytes)
 	if err != nil {
 		return errors.Wrap(err, "failed to initialize speaker")
 	}
@@ -56,15 +56,6 @@ func Init(sampleRate beep.SampleRate, bufferSize int) error {
 				update()
 			case <-done:
 				return
-			}
-		}
-	}()
-
-	go func() {
-		for {
-			select {
-			case buf := <-samplebuffer:
-				player.Write(buf)
 			}
 		}
 	}()
@@ -117,7 +108,6 @@ func update() {
 	mu.Lock()
 	MusicQueue.Stream(samples)
 	mu.Unlock()
-	buf := make([]byte, 1024*4)
 
 	for i := range samples {
 		for c := range samples[i] {
@@ -135,6 +125,5 @@ func update() {
 			buf[i*4+c*2+1] = high
 		}
 	}
-	mathprocessor.ToCalculate <- samples
-	samplebuffer <- buf
+	player.Write(buf)
 }
