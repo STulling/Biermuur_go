@@ -2,9 +2,9 @@ package displaycontroller
 
 import (
 	"fmt"
-
 	"github.com/STulling/Biermuur_go/display"
 	"github.com/STulling/Biermuur_go/effectlib"
+	"time"
 )
 
 const (
@@ -27,15 +27,17 @@ var (
 		"debug":     debug,
 	}
 	tone = 0.
+	prevTime = time.Now()
 )
 
 func debug(arg1 float64, arg2 float64) {
-	fmt.Println(fmt.Sprintf("%f", arg1) + " " + fmt.Sprintf("%f", arg2))
+	fmt.Println(time.Now().Sub(prevTime), arg1, arg2)
+	prevTime = time.Now()
 }
 
 var (
-	callback  func(float64, float64) = callbacks["debugwave"]
-	ToDisplay chan [2]float64        = make(chan [2]float64, 0)
+	callback  = callbacks["debug"]
+	ToDisplay = make(chan [2]float64, 0)
 )
 
 func SetCallback(name string) {
