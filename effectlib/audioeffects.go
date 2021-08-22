@@ -2,14 +2,15 @@ package effectlib
 
 import (
 	"math"
+	"math/rand"
 
 	"github.com/STulling/Biermuur_go/display"
 )
 
 var (
-	t       float64     = 0
-	x_array []int       = make([]int, display.Width)
-	snake   [][2]uint32 = make([][2]uint32, display.Width)
+	t      = 0.
+	xArray = make([]int, display.Width)
+	snake  = make([][2]uint32, display.Width)
 )
 
 func Wave(rms float64, pitch float64) {
@@ -17,12 +18,27 @@ func Wave(rms float64, pitch float64) {
 	dt := 0.1 * (1 + 3*pitch)
 	t += dt
 	for x := 0; x < display.Width; x++ {
-		x_val := 3. * math.Pi * float64(x) / (display.Width - 1)
-		x_array[x] = int(rms*display.Height/2*math.Sin(x_val+t) + display.Height/2)
+		xVal := 3. * math.Pi * float64(x) / (display.Width - 1)
+		xArray[x] = int(rms*display.Height/2*math.Sin(xVal+t) + display.Height/2)
 	}
 	for x := 0; x < display.Width; x++ {
-		display.SetPixelColor(x, x_array[x], display.Primary)
-		display.SetPixelColor(x, x_array[x]-1, display.Primary)
+		display.SetPixelColor(x, xArray[x], display.Primary)
+		display.SetPixelColor(x, xArray[x]-1, display.Primary)
+	}
+	display.Render()
+}
+
+func SlowWave(rms float64, pitch float64) {
+	display.SetStrip(display.Secondary)
+	dt := 0.1
+	t += dt
+	for x := 0; x < display.Width; x++ {
+		xVal := 3. * math.Pi * float64(x) / (display.Width - 1)
+		xArray[x] = int(rms*display.Height/2*math.Sin(xVal+t) + display.Height/2)
+	}
+	for x := 0; x < display.Width; x++ {
+		display.SetPixelColor(x, xArray[x], display.Primary)
+		display.SetPixelColor(x, xArray[x]-1, display.Primary)
 	}
 	display.Render()
 }
@@ -34,11 +50,11 @@ func DebugWave(rms float64, pitch float64) {
 	t += dt
 	for x := 0; x < display.Width; x++ {
 		x_val := 3. * math.Pi * float64(x) / (display.Width - 1)
-		x_array[x] = int(rms*display.Height/2*math.Sin(x_val+t) + display.Height/2)
+		xArray[x] = int(rms*display.Height/2*math.Sin(x_val+t) + display.Height/2)
 	}
 	for x := 0; x < display.Width; x++ {
-		display.SetPixelColor(x, x_array[x], display.RGBToColor(0, 255, 0))
-		display.SetPixelColor(x, x_array[x]-1, display.RGBToColor(0, 255, 0))
+		display.SetPixelColor(x, xArray[x], display.RGBToColor(0, 255, 0))
+		display.SetPixelColor(x, xArray[x]-1, display.RGBToColor(0, 255, 0))
 	}
 	display.Render()
 }
@@ -51,6 +67,75 @@ func Snake(rms float64, pitch float64) {
 	for i, data := range snake {
 		display.SetPixelColor(i, int(data[0]), data[1])
 		display.SetPixelColor(i, int(data[0])+1, data[1])
+	}
+	display.Render()
+}
+
+func Simple(rms float64, pitch float64) {
+	display.SetStrip(display.Secondary)
+	amount := int(rms * display.LedCount)
+	for i := 0; i < amount; i++ {
+		display.SetLedColor(i, display.Primary)
+	}
+	display.Render()
+}
+
+func Sparkle(rms float64, pitch float64) {
+	display.SetStrip(display.Secondary)
+	for i := 0; i < display.LedCount; i++ {
+		if rand.Float64() < rms {
+			display.SetLedColor(i, display.Primary)
+		}
+	}
+	display.Render()
+}
+
+func Cirkel(rms float64, pitch float64) {
+	display.SetStrip(display.Secondary)
+	xMid := display.Width / 2 - 0.5
+	yMid := display.Height / 2 - 0.5
+	radius := rms*10
+	for y := 0.; y < display.Height; y++ {
+		for x := 0.; x < display.Width; x++ {
+			afstand := math.Sqrt(math.Pow(y-yMid,2) + math.Pow(x-xMid,2))
+			if afstand < radius {
+				display.SetPixelColor(int(x), int(y), display.Primary)
+			}
+		}
+	}
+	display.Render()
+}
+
+func Ruit(rms float64, pitch float64) {
+	display.SetStrip(display.Secondary)
+	xMid := display.Width / 2 - 0.5
+	yMid := display.Height / 2 - 0.5
+	i := rms * math.Max(display.Width, display.Height)
+	for y := 0.; y < display.Height; y++ {
+		for x := 0.; x < display.Width; x++ {
+			if math.Abs(x - xMid) < i && math.Abs(y - yMid) < i && math.Abs(x - xMid) + math.Abs(y - yMid) < i {
+				display.SetPixelColor(int(x), int(y), display.Primary)
+			}
+		}
+	}
+	display.Render()
+}
+
+func Fill(rms float64, pitch float64) {
+	display.SetStrip(display.Primary)
+	display.Render()
+}
+
+func Mond(rms float64, pitch float64) {
+	display.SetStrip(display.Secondary)
+	h := float64(display.Width/2)
+	k := float64(display.Height/2)
+	a := float64(display.Width/2)
+	b :=  rms*(display.Height/2)
+	for x := 0.; x < display.Width; x++ {
+		y := int(math.Sqrt(1.-(math.Pow(x-h, 2.)/math.Pow(a,2.))*math.Pow(b,2.)) + k)
+		display.SetPixelColor(int(x), y, display.Primary)
+		display.SetPixelColor(int(x), int(2*k)-y, display.Primary)
 	}
 	display.Render()
 }

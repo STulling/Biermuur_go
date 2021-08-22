@@ -24,12 +24,8 @@ func ProcessBlock(block []byte) (float64, float64) {
 
 	go calcRMS(fblock, c1)
 	tone := calcFFT(fblock)
-	rms := 0.
 
-	select {
-	case x := <-c1:
-		rms = x
-	}
+	rms := <-c1
 
 	return rms, tone
 }

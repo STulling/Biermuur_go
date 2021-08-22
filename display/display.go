@@ -8,11 +8,11 @@ import (
 
 const (
 	brightness = 255
-	ledCounts  = 360
 	gpioPin    = 21
 	freq       = 800000
 	Width      = 20
 	Height     = 18
+	LedCount   = Width * Height
 )
 
 var (
@@ -55,14 +55,18 @@ func SetPixelColor(x int, y int, color uint32) {
 	strip.ws2811.Leds(0)[x+y*Width] = color
 }
 
+func SetLedColor(i int, color uint32) {
+	strip.ws2811.Leds(0)[i] = color
+}
+
 func SetStrip(color uint32) {
-	for i := 0; i < ledCounts; i++ {
+	for i := 0; i < LedCount; i++ {
 		strip.ws2811.Leds(0)[i] = color
 	}
 }
 
 func Clear() {
-	for i := 0; i < ledCounts; i++ {
+	for i := 0; i < LedCount; i++ {
 		strip.ws2811.Leds(0)[i] = 0
 	}
 }
@@ -74,7 +78,7 @@ func RGBToColor(r uint8, g uint8, b uint8) uint32 {
 func Init() {
 	opt := ws281x.DefaultOptions
 	opt.Channels[0].Brightness = brightness
-	opt.Channels[0].LedCount = ledCounts
+	opt.Channels[0].LedCount = LedCount
 	opt.Channels[0].GpioPin = gpioPin
 	opt.Frequency = freq
 

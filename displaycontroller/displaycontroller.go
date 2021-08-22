@@ -15,6 +15,13 @@ var (
 	callbacks = map[string]func(float64, float64){
 		"wave":      effectlib.Wave,
 		"debugwave": effectlib.DebugWave,
+		"slowwave":  effectlib.SlowWave,
+		"sparkle":   effectlib.Sparkle,
+		"mond":      effectlib.Mond,
+		"fill":      effectlib.Fill,
+		"ruit":      effectlib.Ruit,
+		"cirkel":    effectlib.Cirkel,
+		"bars":      effectlib.Simple,
 		"clear":     effectlib.Clear,
 		"snake":     effectlib.Snake,
 		"debug":     debug,
