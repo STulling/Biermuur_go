@@ -19,7 +19,7 @@ func ProcessBlock(block []byte) (float64, float64) {
 	c1 := make(chan float64)
 
 	for i := range fblock {
-		fblock[i] = float64(binary.LittleEndian.Uint16([]byte{block[i*4], block[i*4 + 1]})) / math.Pow(2, 16)
+		fblock[i] = float64(binary.LittleEndian.Uint16([]byte{block[i*4 + 1], block[i*4]})) / math.Pow(2, 16)
 	}
 
 	go calcRMS(fblock, c1)
