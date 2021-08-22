@@ -18,8 +18,6 @@ package oto
 
 import (
 	"errors"
-	"github.com/STulling/Biermuur_go/globals"
-	"github.com/STulling/Biermuur_go/mathprocessor"
 	"runtime"
 	"syscall"
 	"unsafe"
@@ -64,11 +62,6 @@ func (h *header) Write(waveOut uintptr, data []byte) error {
 	if len(data) != len(h.buffer) {
 		return errors.New("oto: len(data) must equal to len(h.buffer)")
 	}
-	written := 0
-	go func() {for written < len(data) {
-		mathprocessor.ToCalculate <- data[written:written+globals.BUFFERSIZE]
-		written += globals.BUFFERSIZE
-	}}()
 	copy(h.buffer, data)
 	if err := waveOutWrite(waveOut, h.waveHdr); err != nil {
 		return err

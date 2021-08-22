@@ -12,7 +12,7 @@ var (
 	// Buffer of 64 samples, theoretically shouldn't get filled if
 	// the pipeline is keeping up.
 	// I just have this buffer if the timer is acting up
-	ToCalculate = make(chan []byte, 64)
+	ToCalculate = make(chan [][2]float64, 64)
 	prevTime    = time.Now()
 )
 

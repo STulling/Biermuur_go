@@ -53,7 +53,6 @@ import "C"
 
 import (
 	"fmt"
-	"github.com/STulling/Biermuur_go/mathprocessor"
 	"unsafe"
 )
 
@@ -138,9 +137,6 @@ func newDriver(sampleRate, numChans, bitDepthInBytes, bufferSizeInBytes int) (tr
 
 func (p *driver) TryWrite(data []byte) (n int, err error) {
 	bufSize := p.bufSamples * p.numChans * p.bitDepthInBytes
-	cpy := make([]byte, len(data))
-	copy(cpy, data)
-	mathprocessor.ToCalculate <- cpy
 	for len(data) > 0 {
 		toWrite := min(len(data), max(0, bufSize-len(p.buf)))
 		p.buf = append(p.buf, data[:toWrite]...)

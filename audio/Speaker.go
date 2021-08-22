@@ -2,6 +2,7 @@ package audio
 
 import (
 	"github.com/STulling/Biermuur_go/globals"
+	"github.com/STulling/Biermuur_go/mathprocessor"
 	"sync"
 
 	"github.com/STulling/Biermuur_go/audio/oto"
@@ -125,5 +126,11 @@ func update() {
 			buf[i*4+c*2+1] = high
 		}
 	}
+	for written := 0; written < len(samples); written+=globals.BLOCKSIZE {
+		cpy := make([][2]float64, globals.BLOCKSIZE)
+		copy(cpy, samples[written:written+globals.BLOCKSIZE])
+		mathprocessor.ToCalculate <- cpy
+	}
+
 	player.Write(buf)
 }

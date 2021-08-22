@@ -1,12 +1,10 @@
 package processing
 
 import (
-	"encoding/binary"
 	"github.com/STulling/Biermuur_go/globals"
+	"github.com/mjibson/go-dsp/fft"
 	"math"
 	"math/cmplx"
-
-	"github.com/mjibson/go-dsp/fft"
 )
 
 var (
@@ -14,12 +12,12 @@ var (
 	fblock = make([]float64, globals.BLOCKSIZE)
 )
 
-func ProcessBlock(block []byte) (float64, float64) {
+func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	c1 := make(chan float64)
 
 	for i := range fblock {
-		fblock[i] = float64(binary.LittleEndian.Uint16([]byte{block[i*4], block[i*4 + 1]})) / math.Pow(2, 16)
+		fblock[i] = block[i][0]
 	}
 
 	go calcRMS(fblock, c1)
