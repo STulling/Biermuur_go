@@ -10,7 +10,7 @@ import (
 var (
 	better = make([]float64, 50)
 	fblock = make([]float64, globals.BLOCKSIZE)
-	buffer = make([]float64, 10)
+	buffer = make([]float64, 5)
 )
 
 func ProcessBlock(block [][2]float64) (float64, float64) {
