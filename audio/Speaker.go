@@ -18,10 +18,13 @@ var (
 	mu           sync.Mutex
 	MusicQueue   Queue
 	samples      [][2]float64
+	sentSamples  [][2]float64
 	buf          []byte
 	context      *oto.Context
 	player       *oto.Player
 	done         chan struct{}
+	syncBuffer   chan [][2]float64
+	BufferAmount int
 )
 
 // Init initializes audio playback through speaker. Must be called before using this package.
@@ -33,12 +36,19 @@ func Init(sampleRate beep.SampleRate, bufferAmount int) error {
 	mu.Lock()
 	defer mu.Unlock()
 
+	BufferAmount = bufferAmount
+
 	Close()
 
 	MusicQueue = Queue{}
 
-	numBytes := bufferAmount * globals.BUFFERSIZE
-	samples = make([][2]float64, bufferAmount * globals.BLOCKSIZE)
+	numBytes := BufferAmount * globals.BUFFERSIZE
+	samples = make([][2]float64, BufferAmount * globals.BLOCKSIZE)
+	sentSamples = make([][2]float64, BufferAmount * globals.BLOCKSIZE)
+	syncBuffer = make(chan [][2]float64, BufferAmount + globals.AUDIOSYNC)
+	for i := 0; i < globals.AUDIOSYNC; i++ {
+		syncBuffer <- make([][2]float64, globals.BLOCKSIZE)
+	}
 	buf = make([]byte, numBytes)
 
 	var err error
@@ -110,9 +120,20 @@ func update() {
 	MusicQueue.Stream(samples)
 	mu.Unlock()
 
-	for i := range samples {
-		for c := range samples[i] {
-			val := samples[i][c]
+	for written := 0; written < len(samples); written+=globals.BLOCKSIZE {
+		cpy := make([][2]float64, globals.BLOCKSIZE)
+		copy(cpy, samples[written:written+globals.BLOCKSIZE])
+		mathprocessor.ToCalculate <- cpy
+		syncBuffer <- cpy
+	}
+
+	for i := 0; i < BufferAmount; i++ {
+		copy(sentSamples[i*blockSize:(i+1)*blockSize], <- syncBuffer)
+	}
+
+	for i := range sentSamples {
+		for c := range sentSamples[i] {
+			val := sentSamples[i][c]
 			if val < -1 {
 				val = -1
 			}
@@ -125,11 +146,6 @@ func update() {
 			buf[i*4+c*2+0] = low
 			buf[i*4+c*2+1] = high
 		}
-	}
-	for written := 0; written < len(samples); written+=globals.BLOCKSIZE {
-		cpy := make([][2]float64, globals.BLOCKSIZE)
-		copy(cpy, samples[written:written+globals.BLOCKSIZE])
-		mathprocessor.ToCalculate <- cpy
 	}
 
 	player.Write(buf)
