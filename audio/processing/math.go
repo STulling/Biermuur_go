@@ -26,13 +26,13 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	}
 
 	go calcRMS(fblock, c1)
-	tone := calcFFT(fblock)
-	tone = denoise(tone)
+	//tone := calcFFT(fblock)
+	//tone = denoise(tone)
 
 	rmsBuffer = rmsBuffer[1:]
 	rmsBuffer = append(rmsBuffer, <-c1)
 
-	return rmsBuffer[0], tone
+	return rmsBuffer[0], 0.5
 }
 
 func vandermonde(a []float64, degree int) *mat64.Dense {
