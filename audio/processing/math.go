@@ -21,11 +21,11 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	c1 := make(chan float64)
 
-	for i := range fblock {
-		fblock[i] = block[i][0]
-	}
+	//for i := range fblock {
+	//	fblock[i] = block[i][0]
+	//}
 
-	go calcRMS(fblock, c1)
+	go calcRMS(block, c1)
 	//tone := calcFFT(fblock)
 	//tone = denoise(tone)
 
@@ -62,10 +62,10 @@ func denoise(tone float64) float64 {
 	return c.At(0, 0)
 }
 
-func calcRMS(block []float64, c chan float64) {
+func calcRMS(block [][2]float64, c chan float64) {
 	sum := 0.
 	for i := 0; i < len(block); i++ {
-		sum += block[i] * block[i]
+		sum += block[i][0] * block[i][0]
 	}
 	sum /= float64(len(block))
 	sum = math.Sqrt(sum)

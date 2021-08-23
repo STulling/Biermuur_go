@@ -1,6 +1,7 @@
 package mathprocessor
 
 import (
+	"fmt"
 	"github.com/STulling/Biermuur_go/audio/processing"
 	"github.com/STulling/Biermuur_go/displaycontroller"
 	"github.com/STulling/Biermuur_go/globals"
@@ -20,6 +21,7 @@ var (
 func RunCalculationPipe(sampleRate int) {
 	for {
 		<-NewStuff
+		fmt.Println(len(NewStuff))
 		ticker := time.NewTicker(time.Second / time.Duration(sampleRate/globals.BLOCKSIZE))
 		cycles := 0
 		for cycles < 2*globals.AUDIOSYNC {
