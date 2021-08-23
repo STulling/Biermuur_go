@@ -21,18 +21,18 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	c1 := make(chan float64)
 
-	//for i := range fblock {
-	//	fblock[i] = block[i][0]
-	//}
+	for i := range fblock {
+		fblock[i] = block[i][0]
+	}
 
 	go calcRMS(block, c1)
-	//tone := calcFFT(fblock)
-	//tone = denoise(tone)
+	tone := calcFFT(fblock)
+	tone = denoise(tone)
 
 	rmsBuffer = rmsBuffer[1:]
 	rmsBuffer = append(rmsBuffer, <-c1)
 
-	return rmsBuffer[0], 0.5
+	return rmsBuffer[0], tone
 }
 
 func vandermonde(a []float64, degree int) *mat64.Dense {
