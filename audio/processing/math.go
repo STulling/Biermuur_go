@@ -2,15 +2,19 @@ package processing
 
 import (
 	"github.com/STulling/Biermuur_go/globals"
+	"github.com/gonum/matrix/mat64"
+	"github.com/mjibson/go-dsp/fft"
 	"math"
 	"math/cmplx"
-	"github.com/mjibson/go-dsp/fft"
 )
 
 var (
 	better = make([]float64, 50)
 	fblock = make([]float64, globals.BLOCKSIZE)
-	buffer = make([]float64, 5)
+	buffer    = make([]float64, 21)
+	rmsBuffer = make([]float64, 10)
+	indices   = []float64{-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,
+		1,2,3,4,5,6,7,8,9,10}
 )
 
 func ProcessBlock(block [][2]float64) (float64, float64) {
@@ -25,20 +29,37 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	tone := calcFFT(fblock)
 	tone = denoise(tone)
 
-	rms := <-c1
+	rmsBuffer = rmsBuffer[1:]
+	rmsBuffer = append(rmsBuffer, <-c1)
 
-	return rms, tone
+	return rmsBuffer[0], tone
+}
+
+func vandermonde(a []float64, degree int) *mat64.Dense {
+	x := mat64.NewDense(len(a), degree+1, nil)
+	for i := range a {
+		for j, p := 0, 1.; j <= degree; j, p = j+1, p*a[i] {
+			x.Set(i, j, p)
+		}
+	}
+	return x
 }
 
 func denoise(tone float64) float64 {
 	buffer = buffer[1:]
 	buffer = append(buffer, tone)
-	sum := 0.
-	for _, val := range buffer {
-		sum += val
+	a := vandermonde(indices, 2)
+	b := mat64.NewDense(len(buffer), 1, buffer)
+	c := mat64.NewDense(3, 1, nil)
+
+	qr := new(mat64.QR)
+	qr.Factorize(a)
+
+	err := c.SolveQR(qr, false, b)
+	if err != nil {
+		panic(err)
 	}
-	sum /= float64(len(buffer))
-	return sum
+	return c.At(0, 0)
 }
 
 func calcRMS(block []float64, c chan float64) {
