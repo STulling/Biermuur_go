@@ -36,7 +36,7 @@ func debug(arg1 float64, arg2 float64) {
 }
 
 var (
-	callback  = callbacks["debug"]
+	callback  = callbacks["wave"]
 	ToDisplay = make(chan [2]float64, 0)
 )
 
@@ -48,12 +48,7 @@ func RunDisplayPipe() {
 	display.Init()
 	for {
 		data := <-ToDisplay
-		if data[1] > tone {
-			tone += offset
-		} else if data[1] < tone {
-			tone -= offset
-		}
-		display.Primary = effectlib.Wheel(uint8(tone * 255))
-		callback(data[0], tone)
+		display.Primary = effectlib.Wheel(uint8(data[1] * 255))
+		callback(data[0], data[1])
 	}
 }

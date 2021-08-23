@@ -2,14 +2,15 @@ package processing
 
 import (
 	"github.com/STulling/Biermuur_go/globals"
-	"github.com/mjibson/go-dsp/fft"
 	"math"
 	"math/cmplx"
+	"github.com/mjibson/go-dsp/fft"
 )
 
 var (
 	better = make([]float64, 50)
 	fblock = make([]float64, globals.BLOCKSIZE)
+	buffer = make([]float64, 10)
 )
 
 func ProcessBlock(block [][2]float64) (float64, float64) {
@@ -22,10 +23,22 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	go calcRMS(fblock, c1)
 	tone := calcFFT(fblock)
+	tone = denoise(tone)
 
 	rms := <-c1
 
 	return rms, tone
+}
+
+func denoise(tone float64) float64 {
+	buffer = buffer[1:]
+	buffer = append(buffer, tone)
+	sum := 0.
+	for _, val := range buffer {
+		sum += val
+	}
+	sum /= float64(len(buffer))
+	return sum
 }
 
 func calcRMS(block []float64, c chan float64) {
