@@ -13,15 +13,21 @@ var (
 	// the pipeline is keeping up.
 	// I just have this buffer if the timer is acting up
 	ToCalculate = make(chan [][2]float64, 64)
+	NewStuff = make(chan bool, 1)
 	prevTime    = time.Now()
 )
 
 func RunCalculationPipe(sampleRate int) {
-	ticker := time.NewTicker(time.Second / time.Duration(sampleRate / globals.BLOCKSIZE))
 	for {
-		<-ticker.C
-		data := <-ToCalculate
-		rms, tone := processing.ProcessBlock(data)
-		displaycontroller.ToDisplay <- [2]float64{rms, tone}
+		<-NewStuff
+		ticker := time.NewTicker(time.Second / time.Duration(sampleRate/globals.BLOCKSIZE))
+		cycles := 0
+		for cycles < 2*globals.AUDIOSYNC {
+			<-ticker.C
+			data := <-ToCalculate
+			rms, tone := processing.ProcessBlock(data)
+			displaycontroller.ToDisplay <- [2]float64{rms, tone}
+			cycles++
+		}
 	}
 }

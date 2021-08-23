@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/STulling/Biermuur_go/globals"
 	"net/http"
 
 	"github.com/STulling/Biermuur_go/audio"
@@ -69,7 +70,7 @@ func main() {
 	fmt.Println("Starting...")
 	go displaycontroller.RunDisplayPipe()
 	go mathprocessor.RunCalculationPipe(44100)
-	audio.Init(beep.SampleRate(44100), 16)
+	audio.Init(beep.SampleRate(44100), 2 * globals.AUDIOSYNC)
 	audio.Play()
 
 	router.Run("0.0.0.0:1337")

@@ -119,7 +119,7 @@ func update() {
 	mu.Lock()
 	MusicQueue.Stream(samples)
 	mu.Unlock()
-
+	mathprocessor.NewStuff <- true
 	for written := 0; written < len(samples); written+=globals.BLOCKSIZE {
 		cpy := make([][2]float64, globals.BLOCKSIZE)
 		copy(cpy, samples[written:written+globals.BLOCKSIZE])
