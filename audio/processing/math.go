@@ -1,20 +1,22 @@
 package processing
 
 import (
+	"math"
+	"math/cmplx"
+
 	"github.com/STulling/Biermuur_go/globals"
 	"github.com/gonum/matrix/mat64"
 	"github.com/mjibson/go-dsp/fft"
-	"math"
-	"math/cmplx"
 )
 
 var (
-	better = make([]float64, 50)
-	fblock = make([]float64, globals.BLOCKSIZE)
+	better    = make([]float64, 50)
+	fblock    = make([]float64, globals.BLOCKSIZE)
 	buffer    = make([]float64, 21)
 	rmsBuffer = make([]float64, 10)
-	indices   = []float64{-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,
-		1,2,3,4,5,6,7,8,9,10}
+	indices   = []float64{-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	max_rms = 0.
 )
 
 func ProcessBlock(block [][2]float64) (float64, float64) {
@@ -30,6 +32,10 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	tone = denoise(tone)
 
 	rmsBuffer = rmsBuffer[1:]
+	rms := <-c1
+	max_rms = math.Max(rms, max_rms)
+	rms = rms / max_rms
+	max_rms *= 0.99
 	rmsBuffer = append(rmsBuffer, <-c1)
 
 	return rmsBuffer[0], tone
