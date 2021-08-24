@@ -128,14 +128,13 @@ func Fill(rms float64, pitch float64) {
 
 func Mond(rms float64, pitch float64) {
 	display.SetStrip(display.Secondary)
-	h := float64(display.Width/2)
-	k := float64(display.Height/2)
-	a := float64(display.Width/2)
-	b :=  rms*(display.Height/2)
+	c := float64(display.Width/2)
+	a := (rms * display.Height/2)/math.Pow(((1- 0.7 * pitch) * display.Width)/2, 2)
+	b := (1 + rms) * display.Height/2
 	for x := 0.; x < display.Width; x++ {
-		y := int(math.Sqrt(1.-(math.Pow(x-h, 2.)/math.Pow(a,2.))*math.Pow(b,2.)) + k)
+		y := int(-(a * math.Pow(x-c, 2)) + b)
 		display.SetPixelColor(int(x), y, display.Primary)
-		display.SetPixelColor(int(x), int(2*k)-y, display.Primary)
+		display.SetPixelColor(int(x), display.Height-y, display.Primary)
 	}
 	display.Render()
 }
