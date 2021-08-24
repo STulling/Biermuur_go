@@ -133,8 +133,10 @@ func Mond(rms float64, pitch float64) {
 	b := (1 + rms) * display.Height/2
 	for x := 0.; x < display.Width; x++ {
 		y := int(-(a * math.Pow(x-c, 2)) + b)
-		display.SetPixelColor(int(x), y, display.Primary)
-		display.SetPixelColor(int(x), display.Height-y, display.Primary)
+		if y >= display.Height/2 {
+			display.SetPixelColor(int(x), y, display.Primary)
+			display.SetPixelColor(int(x), display.Height-y, display.Primary)
+		}
 	}
 	display.Render()
 }
