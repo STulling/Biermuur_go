@@ -36,7 +36,7 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	max_rms = math.Max(rms, max_rms)
 	rms = rms / max_rms
 	max_rms *= 0.99
-	rmsBuffer = append(rmsBuffer, <-c1)
+	rmsBuffer = append(rmsBuffer, rms)
 
 	return rmsBuffer[0], tone
 }
