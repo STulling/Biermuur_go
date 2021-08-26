@@ -13,10 +13,11 @@ var (
 	better    = make([]float64, 50)
 	fblock    = make([]float64, globals.BLOCKSIZE)
 	buffer    = make([]float64, 21)
-	rmsBuffer = make([]float64, 10)
+	rmsBuffer = make([]float64, globals.AUDIOSYNC + globals.BUFFERAMOUNT)
+	toneBuffer = make([]float64, globals.BUFFERAMOUNT)
 	indices   = []float64{-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	max_rms = 1.
+	maxRms = 1.
 )
 
 func ProcessBlock(block [][2]float64) (float64, float64) {
@@ -33,12 +34,15 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 
 	rmsBuffer = rmsBuffer[1:]
 	rms := <-c1
-	max_rms = math.Max(rms, max_rms)
+	maxRms = math.Max(rms, maxRms)
 	rmsBuffer = append(rmsBuffer, rms)
-	ret := math.Min(1., rmsBuffer[0] / max_rms)
-	max_rms *= 0.99
+	ret := math.Min(1., rmsBuffer[0] /maxRms)
+	maxRms *= 0.99
 
-	return ret, tone
+	toneBuffer = toneBuffer[1:]
+	toneBuffer = append(toneBuffer, tone)
+
+	return ret, toneBuffer[0]
 }
 
 func vandermonde(a []float64, degree int) *mat64.Dense {
