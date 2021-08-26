@@ -73,7 +73,7 @@ func main() {
 	audio.Init(beep.SampleRate(44100), globals.BUFFERAMOUNT)
 	audio.Play()
 
-	router.Run("0.0.0.0:1337")
+	router.Run("0.0.0.0:5000")
 }
 
 /*
