@@ -16,7 +16,7 @@ var (
 	rmsBuffer = make([]float64, 10)
 	indices   = []float64{-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	max_rms = 0.
+	max_rms = 1.
 )
 
 func ProcessBlock(block [][2]float64) (float64, float64) {
@@ -34,11 +34,11 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	rmsBuffer = rmsBuffer[1:]
 	rms := <-c1
 	max_rms = math.Max(rms, max_rms)
-	rms = rms / max_rms
-	max_rms *= 0.99
 	rmsBuffer = append(rmsBuffer, rms)
+	ret := rms / max_rms
+	max_rms *= 0.99
 
-	return rmsBuffer[0], tone
+	return ret, tone
 }
 
 func vandermonde(a []float64, degree int) *mat64.Dense {
