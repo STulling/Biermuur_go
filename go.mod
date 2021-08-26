@@ -26,6 +26,7 @@ require github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 
 require (
 	github.com/faiface/beep v1.0.2
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9
 	golang.org/x/sys v0.0.0-20210304124612-50617c2ba197
 )

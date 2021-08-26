@@ -11,6 +11,7 @@ import (
 	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/STulling/Biermuur_go/musicio/playlists"
 	"github.com/faiface/beep"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,6 +60,7 @@ func simpleAction(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
+	router.Use(cors.Default())
 	router.GET("/api/songs/play/:name", play)
 	router.GET("/api/songs/add/:name", add)
 	router.GET("/api/DJ/:action", setAction)
