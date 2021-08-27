@@ -17,7 +17,7 @@ func AddSong(name string) {
 	tmpName := randomString(8)
 	command := fmt.Sprintf("youtube-dl -x -f bestaudio -x --audio-format mp3 --postprocessor-args \"-ar 44100 -ac 2\" -o \"%s/%s.%%(ext)s\" \"ytsearch1:%s\"",
 		tmpFolder, tmpName, name)
-	exec.Command(command)
+	exec.Command(command).Run()
 	volume := findVolume(path.Join(tmpFolder, tmpName))
 	normalizeFile(path.Join(tmpFolder, tmpName), path.Join(musicutil.MusicFolder, name + ".mp3"), volume)
 	e := os.Remove(path.Join(tmpFolder, tmpName))
