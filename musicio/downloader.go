@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"time"
 )
 
 func chk(err error) {
@@ -59,6 +60,7 @@ func AddSong(name string) {
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 func randomString(n int) string {
+	rand.Seed(time.Now().Unix())
 	b := make([]byte, n)
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
