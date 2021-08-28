@@ -26,7 +26,7 @@ func list(c *gin.Context) {
 }
 
 func listPlaylists(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, musicio.ListSongs())
+	c.IndentedJSON(http.StatusOK, playlists.ListPlaylists())
 }
 
 func add(c *gin.Context) {
