@@ -1,10 +1,12 @@
 package mathprocessor
 
 import (
+	"time"
+
+	"github.com/STulling/Biermuur_go/audio"
 	"github.com/STulling/Biermuur_go/audio/processing"
 	"github.com/STulling/Biermuur_go/displaycontroller"
 	"github.com/STulling/Biermuur_go/globals"
-	"time"
 )
 
 var (
@@ -13,7 +15,7 @@ var (
 	// the pipeline is keeping up.
 	// I just have this buffer if the timer is acting up
 	ToCalculate = make(chan [][2]float64, 64)
-	NewStuff = make(chan bool, 10)
+	NewStuff    = make(chan bool, 10)
 	prevTime    = time.Now()
 )
 
@@ -28,7 +30,11 @@ func RunCalculationPipe(sampleRate int) {
 		for cycles < 2*globals.AUDIOSYNC {
 			<-ticker.C
 			data := <-ToCalculate
-			rms, tone := processing.ProcessBlock(data)
+			if audio.MusicQueue.Size() != 0 {
+				rms, tone = processing.ProcessBlock(data)
+			} else {
+				rms, tone = 0, 0
+			}
 			displaycontroller.ToDisplay <- [2]float64{rms, tone}
 			cycles++
 		}

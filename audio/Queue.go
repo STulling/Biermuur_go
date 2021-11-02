@@ -14,6 +14,10 @@ type Queue struct {
 	PlayList  []string
 }
 
+func (q *Queue) Size() int {
+	return len(q.streamers)
+}
+
 func (q *Queue) AddSong(name string) {
 	streamer := musicio.Load(name)
 	fmt.Println("Added song: " + fmt.Sprint(streamer))
