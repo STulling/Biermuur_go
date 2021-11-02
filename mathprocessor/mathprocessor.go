@@ -3,7 +3,6 @@ package mathprocessor
 import (
 	"time"
 
-	"github.com/STulling/Biermuur_go/audio"
 	"github.com/STulling/Biermuur_go/audio/processing"
 	"github.com/STulling/Biermuur_go/displaycontroller"
 	"github.com/STulling/Biermuur_go/globals"
@@ -31,11 +30,7 @@ func RunCalculationPipe(sampleRate int) {
 			time.Sleep(time.Second/time.Duration(sampleRate/globals.BLOCKSIZE) - time.Now().Sub(prevTime))
 			prevTime = time.Now()
 			data := <-ToCalculate
-			if audio.MusicQueue.Size() != 0 {
-				rms, tone = processing.ProcessBlock(data)
-			} else {
-				rms, tone = 0, 0
-			}
+			rms, tone = processing.ProcessBlock(data)
 			displaycontroller.ToDisplay <- [2]float64{rms, tone}
 			cycles++
 		}
