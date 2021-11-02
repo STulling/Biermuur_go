@@ -38,5 +38,6 @@ func RunCalculationPipe(sampleRate int) {
 			displaycontroller.ToDisplay <- [2]float64{rms, tone}
 			cycles++
 		}
+		ticker.Stop()
 	}
 }
