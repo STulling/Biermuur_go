@@ -1,9 +1,10 @@
 package audio
 
 import (
+	"sync"
+
 	"github.com/STulling/Biermuur_go/globals"
 	"github.com/STulling/Biermuur_go/mathprocessor"
-	"sync"
 
 	"github.com/STulling/Biermuur_go/audio/oto"
 	"github.com/faiface/beep"
@@ -43,9 +44,9 @@ func Init(sampleRate beep.SampleRate, bufferAmount int) error {
 	MusicQueue = Queue{}
 
 	numBytes := BufferAmount * globals.BUFFERSIZE
-	samples = make([][2]float64, BufferAmount * globals.BLOCKSIZE)
-	sentSamples = make([][2]float64, BufferAmount * globals.BLOCKSIZE)
-	syncBuffer = make(chan [][2]float64, BufferAmount + globals.AUDIOSYNC)
+	samples = make([][2]float64, BufferAmount*globals.BLOCKSIZE)
+	sentSamples = make([][2]float64, BufferAmount*globals.BLOCKSIZE)
+	syncBuffer = make(chan [][2]float64, BufferAmount+globals.AUDIOSYNC)
 	for i := 0; i < globals.AUDIOSYNC; i++ {
 		syncBuffer <- make([][2]float64, globals.BLOCKSIZE)
 	}
@@ -120,7 +121,7 @@ func update() {
 	MusicQueue.Stream(samples)
 	mu.Unlock()
 	mathprocessor.NewStuff <- true
-	for written := 0; written < len(samples); written+=globals.BLOCKSIZE {
+	for written := 0; written < len(samples); written += globals.BLOCKSIZE {
 		cpy := make([][2]float64, globals.BLOCKSIZE)
 		copy(cpy, samples[written:written+globals.BLOCKSIZE])
 		mathprocessor.ToCalculate <- cpy
@@ -128,7 +129,7 @@ func update() {
 	}
 
 	for i := 0; i < BufferAmount; i++ {
-		copy(sentSamples[i*blockSize:(i+1)*blockSize], <- syncBuffer)
+		copy(sentSamples[i*blockSize:(i+1)*blockSize], <-syncBuffer)
 	}
 
 	for i := range sentSamples {

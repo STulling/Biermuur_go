@@ -15,6 +15,8 @@ import (
 	"github.com/faiface/beep"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	_ "net/http/pprof"
 )
 
 func play(c *gin.Context) {
