@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/STulling/Biermuur_go/globals"
 	"net/http"
+
+	"github.com/STulling/Biermuur_go/audio/processing"
+	"github.com/STulling/Biermuur_go/globals"
 
 	"github.com/STulling/Biermuur_go/audio"
 	"github.com/STulling/Biermuur_go/displaycontroller"
@@ -70,6 +72,7 @@ func main() {
 	router.GET("/api/common/:action", simpleAction)
 
 	fmt.Println("Starting...")
+	processing.InitBuffers()
 	go displaycontroller.RunDisplayPipe()
 	go mathprocessor.RunCalculationPipe(44100)
 	audio.Init(beep.SampleRate(44100), globals.BUFFERAMOUNT)

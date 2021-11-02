@@ -10,15 +10,34 @@ import (
 )
 
 var (
-	better    = make([]float64, 50)
-	fblock    = make([]float64, globals.BLOCKSIZE)
-	buffer    = make([]float64, 21)
-	rmsBuffer = make([]float64, globals.AUDIOSYNC + globals.BUFFERAMOUNT)
-	toneBuffer = make([]float64, globals.BUFFERAMOUNT)
-	indices   = []float64{-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	maxRms = 1.
+	better     = make([]float64, 50)
+	fblock     = make([]float64, globals.BLOCKSIZE)
+	buffer     = make([]float64, 21)
+	rmsBuffer  = make(chan float64, globals.AUDIOSYNC+globals.BUFFERAMOUNT)
+	toneBuffer = make(chan float64, globals.BUFFERAMOUNT)
+	indices    = make([][]float64, 21)
+	maxRms     = 1.
+	i          = 0
 )
+
+func InitBuffers() {
+	for i := 0; i < globals.AUDIOSYNC+globals.BUFFERAMOUNT; i++ {
+		rmsBuffer <- 0
+	}
+	for i := 0; i < globals.BUFFERAMOUNT; i++ {
+		toneBuffer <- 0
+	}
+	for i := 0; i < 21; i++ {
+		indices[i] = make([]float64, 21)
+		for j := 0; j < 21; j++ {
+			val := float64(-10 + i + j)
+			if val > 10 {
+				val -= 20
+			}
+			indices[i][j] = val
+		}
+	}
+}
 
 func ProcessBlock(block [][2]float64) (float64, float64) {
 
@@ -32,17 +51,17 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	tone := calcFFT(fblock)
 	tone = denoise(tone)
 
-	rmsBuffer = rmsBuffer[1:]
+	currRms := <-rmsBuffer
 	rms := <-c1
 	maxRms = math.Max(rms, maxRms)
-	rmsBuffer = append(rmsBuffer, rms)
-	ret := math.Min(1., rmsBuffer[0] /maxRms)
+	rmsBuffer <- rms
+	ret := math.Min(1., currRms/maxRms)
 	maxRms *= 0.99
 
-	toneBuffer = toneBuffer[1:]
-	toneBuffer = append(toneBuffer, tone)
+	currTone := <-toneBuffer
+	toneBuffer <- tone
 
-	return ret, toneBuffer[0]
+	return ret, currTone
 }
 
 func vandermonde(a []float64, degree int) *mat64.Dense {
@@ -56,9 +75,8 @@ func vandermonde(a []float64, degree int) *mat64.Dense {
 }
 
 func denoise(tone float64) float64 {
-	buffer = buffer[1:]
-	buffer = append(buffer, tone)
-	a := vandermonde(indices, 2)
+	buffer[i] = tone
+	a := vandermonde(indices[i], 2)
 	b := mat64.NewDense(len(buffer), 1, buffer)
 	c := mat64.NewDense(3, 1, nil)
 
@@ -69,6 +87,12 @@ func denoise(tone float64) float64 {
 	if err != nil {
 		panic(err)
 	}
+
+	i++
+	if i > 20 {
+		i = 0
+	}
+
 	return c.At(0, 0)
 }
 
