@@ -22,13 +22,14 @@ var (
 func RunCalculationPipe(sampleRate int) {
 	for {
 		<-NewStuff
-		ticker := time.NewTicker(time.Second / time.Duration(sampleRate/globals.BLOCKSIZE))
+		prevTime = time.Now()
 		data := <-ToCalculate
 		rms, tone := processing.ProcessBlock(data)
 		displaycontroller.ToDisplay <- [2]float64{rms, tone}
 		cycles := 1
 		for cycles < 2*globals.AUDIOSYNC {
-			<-ticker.C
+			time.Sleep(time.Second/time.Duration(sampleRate/globals.BLOCKSIZE) - time.Now().Sub(prevTime))
+			prevTime = time.Now()
 			data := <-ToCalculate
 			if audio.MusicQueue.Size() != 0 {
 				rms, tone = processing.ProcessBlock(data)
@@ -38,6 +39,5 @@ func RunCalculationPipe(sampleRate int) {
 			displaycontroller.ToDisplay <- [2]float64{rms, tone}
 			cycles++
 		}
-		ticker.Stop()
 	}
 }
