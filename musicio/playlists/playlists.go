@@ -5,6 +5,7 @@ import (
 	"path"
 
 	"github.com/STulling/Biermuur_go/audio"
+	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/STulling/Biermuur_go/musicio/musicutil"
 )
 
@@ -12,14 +13,14 @@ var (
 	playlistFolder = path.Join(musicutil.MusicFolder, "playlists")
 )
 
-func chk(err error)  {
+func chk(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
 func ListPlaylists() []string {
-	return musicutil.ListFiles(playlistFolder)
+	return append(musicutil.ListFiles(playlistFolder), "All")
 }
 
 func RemovePlaylist(name string) {
@@ -43,5 +44,9 @@ func NewPlaylist(name string) {
 }
 
 func PlayPlaylist(name string) {
-	audio.MusicQueue.PlayList = musicutil.ReadLines(path.Join(playlistFolder, name))
+	if name == "All" {
+		audio.MusicQueue.PlayList = musicio.ListSongs()
+	} else {
+		audio.MusicQueue.PlayList = musicutil.ReadLines(path.Join(playlistFolder, name))
+	}
 }
