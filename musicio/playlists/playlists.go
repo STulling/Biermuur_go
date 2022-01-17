@@ -5,7 +5,6 @@ import (
 	"path"
 
 	"github.com/STulling/Biermuur_go/audio"
-	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/STulling/Biermuur_go/musicio/musicutil"
 )
 
@@ -45,7 +44,7 @@ func NewPlaylist(name string) {
 
 func PlayPlaylist(name string) {
 	if name == "All" {
-		audio.MusicQueue.PlayList = musicio.ListSongs()
+		audio.MusicQueue.PlayList = musicutil.ListFilesExtension(musicutil.MusicFolder, "mp3")
 	} else {
 		audio.MusicQueue.PlayList = musicutil.ReadLines(path.Join(playlistFolder, name))
 	}
