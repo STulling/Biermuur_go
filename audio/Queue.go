@@ -56,7 +56,8 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 			go q.addRandom()
 		}
 		if len(q.streamers) == 0 && len(q.PlayList) != 0 {
-			go q.addRandom()
+			q.addRandom()
+			break
 		}
 		if len(q.streamers) == 0 && len(q.PlayList) == 0 {
 			for i := range samples[filled:] {
