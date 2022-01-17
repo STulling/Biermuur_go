@@ -26,6 +26,7 @@ func (q *Queue) AddSong(name string) {
 
 func (q *Queue) addRandom() {
 	streamer := musicio.Load(q.PlayList[rand.Intn(len(q.PlayList))])
+	fmt.Println("Added song: " + fmt.Sprint(streamer))
 	q.Add(streamer)
 }
 
@@ -54,8 +55,10 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 			q.Requested = true
 			go q.addRandom()
 		}
-		// There are no streamers in the queue, so we stream silence.
-		if len(q.streamers) == 0 {
+		if len(q.streamers) == 0 && len(q.PlayList) != 0 {
+			go q.addRandom()
+		}
+		if len(q.streamers) == 0 && len(q.PlayList) == 0 {
 			for i := range samples[filled:] {
 				samples[i][0] = 0
 				samples[i][1] = 0
