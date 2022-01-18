@@ -3,6 +3,7 @@ package audio
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/STulling/Biermuur_go/musicio"
 	"github.com/faiface/beep"
@@ -25,6 +26,7 @@ func (q *Queue) AddSong(name string) {
 }
 
 func (q *Queue) addRandom() {
+	rand.Seed(time.Now().UnixNano())
 	streamer := musicio.Load(q.PlayList[rand.Intn(len(q.PlayList))])
 	fmt.Println("Added song: " + fmt.Sprint(streamer))
 	q.Add(streamer)
