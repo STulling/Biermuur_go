@@ -33,7 +33,11 @@ func (q *Queue) addRandom() {
 }
 
 func (q *Queue) Clear() {
-	q.streamers = q.streamers[len(q.streamers):]
+	q.streamers = q.streamers[:0]
+}
+
+func (q *Queue) Skip() {
+	q.streamers = q.streamers[1:]
 }
 
 func (q *Queue) Add(streamers ...beep.Streamer) {

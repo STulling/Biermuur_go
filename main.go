@@ -51,9 +51,14 @@ func playPlaylist(c *gin.Context) {
 
 func simpleAction(c *gin.Context) {
 	switch action := c.Param("action"); action {
-	case "clear":
+	case "shuffle":
+		go playlists.PlayPlaylist("All")
+		displaycontroller.SetCallback("wave")
+	case "stop":
 		audio.MusicQueue.Clear()
 		displaycontroller.SetCallback("clear")
+	case "skip":
+		audio.MusicQueue.Skip()
 	default:
 		fmt.Printf("Unknown action: %s.\n", action)
 	}
