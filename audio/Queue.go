@@ -34,6 +34,7 @@ func (q *Queue) addRandom() {
 
 func (q *Queue) Clear() {
 	q.streamers = q.streamers[:0]
+	q.PlayList = q.PlayList[:0]
 }
 
 func (q *Queue) Skip() {
