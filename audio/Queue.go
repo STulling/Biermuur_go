@@ -38,7 +38,9 @@ func (q *Queue) Clear() {
 }
 
 func (q *Queue) Skip() {
-	q.streamers = q.streamers[1:]
+	if len(q.streamers) > 0 {
+		q.streamers = q.streamers[1:]
+	}
 }
 
 func (q *Queue) Add(streamers ...beep.Streamer) {
