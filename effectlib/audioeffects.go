@@ -92,12 +92,12 @@ func Sparkle(rms float64, pitch float64) {
 
 func Cirkel(rms float64, pitch float64) {
 	display.SetStrip(display.Secondary)
-	xMid := display.Width / 2 - 0.5
-	yMid := display.Height / 2 - 0.5
-	radius := rms*10
+	xMid := display.Width/2 - 0.5
+	yMid := display.Height/2 - 0.5
+	radius := rms * 10
 	for y := 0.; y < display.Height; y++ {
 		for x := 0.; x < display.Width; x++ {
-			afstand := math.Sqrt(math.Pow(y-yMid,2) + math.Pow(x-xMid,2))
+			afstand := math.Sqrt(math.Pow(y-yMid, 2) + math.Pow(x-xMid, 2))
 			if afstand < radius {
 				display.SetPixelColor(int(x), int(y), display.Primary)
 			}
@@ -108,12 +108,12 @@ func Cirkel(rms float64, pitch float64) {
 
 func Ruit(rms float64, pitch float64) {
 	display.SetStrip(display.Secondary)
-	xMid := display.Width / 2 - 0.5
-	yMid := display.Height / 2 - 0.5
+	xMid := display.Width/2 - 0.5
+	yMid := display.Height/2 - 0.5
 	i := rms * math.Max(display.Width, display.Height)
 	for y := 0.; y < display.Height; y++ {
 		for x := 0.; x < display.Width; x++ {
-			if math.Abs(x - xMid) < i && math.Abs(y - yMid) < i && math.Abs(x - xMid) + math.Abs(y - yMid) < i {
+			if math.Abs(x-xMid) < i && math.Abs(y-yMid) < i && math.Abs(x-xMid)+math.Abs(y-yMid) < i {
 				display.SetPixelColor(int(x), int(y), display.Primary)
 			}
 		}
@@ -128,9 +128,9 @@ func Fill(rms float64, pitch float64) {
 
 func Mond(rms float64, pitch float64) {
 	display.SetStrip(display.Secondary)
-	c := float64(display.Width/2)
-	a := (rms * display.Height/2)/math.Pow(((1- 0.7 * pitch) * display.Width)/2, 2)
-	b := (1 + rms) * display.Height/2
+	c := float64(display.Width / 2)
+	a := (rms * display.Height / 2) / math.Pow(((1-0.7*pitch)*display.Width)/2, 2)
+	b := (1 + rms) * display.Height / 2
 	for x := 0.; x < display.Width; x++ {
 		y := int(-(a * math.Pow(x-c, 2)) + b)
 		if y >= display.Height/2 {

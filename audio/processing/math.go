@@ -56,7 +56,8 @@ func ProcessBlock(block [][2]float64) (float64, float64) {
 	maxRms = math.Max(rms, maxRms)
 	rmsBuffer <- rms
 	ret := math.Min(1., currRms/maxRms)
-	maxRms *= 0.99
+	ret = math.Min(1., math.Pow(1.2*ret, 3.))
+	maxRms *= 0.99999
 
 	currTone := <-toneBuffer
 	toneBuffer <- tone
